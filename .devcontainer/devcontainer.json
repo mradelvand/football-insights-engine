@@ -1,0 +1,22 @@
+{
+  "name": "football-insights-engine",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "features": {
+    "ghcr.io/devcontainers/features/azure-cli:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "postCreateCommand": "pip install --user -r requirements.txt && curl -fsSL https://claude.ai/install.sh | bash",
+  "remoteEnv": {
+    "PYTHONPATH": "${containerWorkspaceFolder}",
+    "PATH": "${containerEnv:PATH}:/home/vscode/.local/bin"
+  },
+  "forwardPorts": [8501],
+  "portsAttributes": {
+    "8501": { "label": "Streamlit", "onAutoForward": "openBrowser" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python"]
+    }
+  }
+}

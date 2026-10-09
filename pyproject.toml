@@ -1,0 +1,10 @@
+[project]
+name = "football-insights-engine"
+version = "0.1.0"
+description = "Explainable football match intelligence on synthetic data (independent portfolio project)"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+# Run tests from the repo root so "from src.sim.schema import Event" works.
+pythonpath = ["."]
+testpaths = ["tests"]
