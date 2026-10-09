@@ -1,6 +1,6 @@
 ---
 name: test-first-metric
-description: The test-first workflow for every metric and detector in this project. Use when CESC starts a metric, detector or simulator rule, or a plan step says "test first".
+description: The test-first workflow for every metric and detector in this project. Use when CESC starts a metric, detector or converter rule, or a plan step says "test first".
 user-invocable: false
 ---
 

@@ -1,10 +1,10 @@
 # Football Insights Engine — Game Plan
 
-Independent portfolio build of the Microsoft × Premier League "Inside the Game" brief (Québec residents can't officially enter). 54 steps, Oct 8 → Nov 22, 2026.
+Independent portfolio build of the Microsoft × Premier League "Inside the Game" brief (Québec residents can't officially enter), on real StatsBomb open data (Premier League 2015/16). 56 steps, Oct 8 → Nov 22, 2026. What it does: `docs/brief.md`. Data licence: `docs/DATA.md`.
 
-- **Milestone 1 · Sun Nov 1, 2026:** local demo, no AI. A simulated match replays in the browser with live stats and fact cards.
+- **Milestone 1 · Sun Nov 1, 2026:** local demo, no AI. Leicester 3–1 Everton replays in the browser with live stats and template insights.
 - **Milestone 2 · Sun Nov 22, 2026:** deployed on Azure with AI agents, a video under 2 minutes, README and blog post.
-- **Time:** about 36 h 30 min of required steps. With a 25% learning buffer that's about 7 h a week, the top of a 5–8 h range. If week 1 runs late, start cutting early.
+- **Time:** about 38 h 20 min of required steps. With a 25% learning buffer that's about 7.5 h a week, the top of a 5–8 h range. If week 1 runs late, start cutting early.
 
 ## How to read this file
 
@@ -13,7 +13,7 @@ Independent portfolio build of the Microsoft × Premier League "Inside the Game"
 - Steps tagged **optional** can be skipped. **milestone** steps close a phase.
 - Every session: `/next` → do 1–3 steps → `/done` → stop after a step, never in the middle.
 
-**Behind by 2+ hours in a week? Cut in this order:** 1) StatsBomb realism check (w2-4), 2) French output, 3) the second agent, 4) KQL logs (w6-3), 5) Azure deploy (demo locally in the video). **Never cut:** the metric tests, the verifier, the video.
+**Behind by 2+ hours in a week? Cut in this order:** 1) French output, 2) the second agent, 3) KQL logs (w6-3), 4) Azure deploy (demo locally in the video). **Never cut:** the metric tests, the verifier, the template fallback, the video.
 
 **Stuck?** 20 minutes on one error → `/stuck`. Can't start → do only the first 5 minutes of the next step. New idea → `/park`.
 
@@ -24,7 +24,7 @@ Dates: Thu Oct 8 – Sun Oct 11 (2026-10-08 → 2026-10-11) · Total: ≈2 h 45 
 - [x] **w0-1 · Write your goal in one sentence** · 10 min · by hand
   - Do:
     1. Open any notes app.
-    2. Write: *"By Nov 22 I publish a working football insight engine on synthetic data, with a 2-minute video and a blog post. Local demo by Nov 1."*
+    2. Write: *"By Nov 22 I publish a working football insight engine on real StatsBomb data, with a video under 2 minutes and a blog post. Local demo by Nov 1."*
     3. Pin it where you'll see it.
   - Done when: The sentence is saved and pinned.
   - Why: When a shiny new idea appears, ask: "Does this help the goal?" If not, run `/park` and keep going.
@@ -91,7 +91,7 @@ Dates: Thu Oct 8 – Sun Oct 11 (2026-10-08 → 2026-10-11) · Total: ≈2 h 45 
     git add . && git commit -m "Add Claude Code workspace and plan" && git push
     ```
   - Done when: On GitHub you see .claude, .devcontainer, docs, src, tests and data.
-  - Why: One folder per pipeline stage, so the repo looks like the diagram. Git ignores empty folders, so `tests` and `data` hold a `.gitkeep` file. `__init__.py` makes the src folders importable, and `pythonpath = ["."]` in pyproject.toml lets pytest find them, so `from src.sim.schema import Event` works.
+  - Why: One folder per pipeline stage, so the repo looks like the diagram. Git ignores empty folders, so `tests` and `data` hold a `.gitkeep` file. `__init__.py` makes the src folders importable, and `pythonpath = ["."]` in pyproject.toml lets pytest find them, so `from src.ingest.schema import Event` works.
 - [ ] **w0-7b · Rebuild the codespace and restart Claude Code** · 15 min · with Claude
   - Do:
     1. Type `/exit` to close Claude Code.
@@ -126,10 +126,18 @@ Dates: Thu Oct 8 – Sun Oct 11 (2026-10-08 → 2026-10-11) · Total: ≈2 h 45 
   - Done when: `docs/devlog.md` has today's entry, pushed to GitHub.
   - Why: It becomes your blog post. The "next" line tells you where to start next session, so you don't spend energy deciding.
 
-## Week 1 · Make a synthetic match
+## Week 1 · Load a real match
 
-Dates: Mon Oct 12 – Sun Oct 18 (2026-10-12 → 2026-10-18) · Total: ≈6 h 15 min · **Win:** A full 90-minute match file of two fictional teams.
+Dates: Mon Oct 12 – Sun Oct 18 (2026-10-12 → 2026-10-18) · Total: ≈5 h 20 min · **Win:** Leicester 3–1 Everton as a tested event file, with all 42 shots on a pitch.
 
+- [ ] **w1-0 · Register with StatsBomb** · 5 min · by hand
+  - Do:
+    1. Open the StatsBomb resource centre.
+    2. Register with your **personal** email.
+    3. Download the media pack (you'll need the logo for the README and app).
+  - Done when: Registration confirmed and the logo is saved.
+  - Why: Their licence requires the logo on anything you publish.
+  - Link: [Open the StatsBomb resource centre](https://statsbomb.com/resource-centre)
 - [ ] **w1-1 · Try pytest** · 30 min · with Claude
   - Do:
     1. Create `tests/test_hello.py` with the code below.
@@ -144,53 +152,46 @@ Dates: Mon Oct 12 – Sun Oct 18 (2026-10-12 → 2026-10-18) · Total: ≈6 h 15
   - Why: Every metric gets a test. A test is config validation for your own code.
 - [ ] **w1-2 · Define the event schema** · 45 min · with Claude
   - Do:
-    1. In `src/sim/schema.py`, make a dataclass `Event`.
-    2. Fields: id, match_id, minute, second, team, player, type, x, y, end_x, end_y, outcome.
-    3. Types for now: kickoff, pass, shot, goal, tackle, interception.
-    4. Pitch is 105 × 68 m. Coordinates are from the acting team's view, attacking toward x = 105.
+    1. In `src/ingest/schema.py`, make a dataclass `Event`.
+    2. Fields: id, sb_id, match_id, period, minute, second, team, player, type, x, y, end_x, end_y, outcome, play_pattern, body_part, shot_type, xg.
+    3. `id` = StatsBomb `index`; `sb_id` = the StatsBomb UUID.
+    4. Types: pass, corner, shot, tackle, interception, clearance, block, pressure, foul, own_goal.
+    5. Pitch is 120 × 80. Coordinates are from the acting team's view, attacking toward x = 120.
   - Done when: You can create an Event and print it.
-  - Why: The schema is the contract between all stages, like agreeing on a packet format before writing a protocol. With team-relative coordinates, the final third is always x > 70.
-- [ ] **w1-3 · Invent two teams** · 30 min · with Claude
+  - Why: The schema is the contract between all stages, like agreeing on a packet format before writing a protocol. With team-relative coordinates, the final third is always x > 80.
+- [ ] **w1-3 · Fetch the data** · 45 min · with Claude
   - Do:
-    1. Create `data/teams.json`.
-    2. Two made-up clubs (for example Riverside Rovers and Mont-Royal Athletic).
-    3. 11 players each: name, number, position, skill between 0.6 and 0.9.
-  - Done when: It loads with `json.load`.
-  - Why: No real Premier League names or data. Different skill levels give the AI something to talk about.
-- [ ] **w1-4a · Simulator: the passing loop** · 1 h · with Claude
+    1. In `src/ingest/fetch.py`, use statsbombpy to download the 2015/16 match list (competition 2, season 27).
+    2. Download the events for match 3754033 into `data/raw/` (git-ignored).
+    3. Check `docs/DATA.md` (licence summary) and run `git status`: nothing from `data/raw/` shows up.
+  - Done when: `data/raw/` holds the match list and 3,269 events, and `git status` doesn't list them.
+  - Why: Like pulling a config backup to a local share: you keep a copy to work on, but it never goes into the public repo.
+- [ ] **w1-4a · Converter, core** · 1 h · with Claude
   - Do:
-    1. In `src/sim/simulate.py`, start with `random.seed(42)`.
-    2. One team has the ball at (x, y).
-    3. Each step: pass forward, sideways or back.
-    4. Success chance = passer skill × a factor that drops with distance.
-  - Done when: It prints a few dozen passes.
-  - Why: The seed makes the same match every run, so bugs repeat and can be fixed.
-- [ ] **w1-4b · Simulator: turnovers, clock, file** · 1 h · with Claude
+    1. Test first: pick 3 StatsBomb events by hand (a pass, a shot, a tackle) and write what each Event should look like.
+    2. In `src/ingest/statsbomb_adapter.py`, turn StatsBomb events into Event objects.
+    3. Write `data/match_3754033.jsonl` (git-ignored), one event per line, sorted by index.
+  - Done when: The 3 tests pass and the file has 3,269 lines.
+  - Why: An adapter keeps StatsBomb's format at the edge, like a NAT: everything inside speaks your own format.
+- [ ] **w1-4b · Converter: clock, added time and own goals** · 45 min · with Claude
   - Do:
-    1. Failed pass → emit tackle or interception, switch possession.
-    2. Move the clock 2–6 seconds per event, until minute 90.
-    3. Write each event as one JSON line to `data/match_001.jsonl`.
-    4. Run `/explain` on any line you didn't write.
-  - Done when: A 90-minute file exists.
-  - Why: This is the synthetic data the brief asks for. Building it teaches you how event data is shaped, which data companies care about.
-- [ ] **w1-5a · Simulator: shots with a simple xG** · 45 min · with Claude
+    1. Clock: regular time shows minute + 1 (4:58 → 5'); added time shows 45+n / 90+n (see the `football-metrics` skill).
+    2. Own Goal For → `own_goal`, counted in the score.
+    3. Tests: the four goals come out as 5' (index 240), 33' (1324), 65' (2418) and 88' (3115).
+  - Done when: pytest is green.
+  - Why: The clock is what fans see. Getting 4:58 to show as 5' is the difference between looking right and looking broken.
+- [ ] **w1-5 · Sanity check** · 30 min · with Claude
   - Do:
-    1. In the final third (x > 70), add a chance to shoot.
-    2. Goal probability falls with distance and angle to goal. That's a basic xG.
-  - Done when: Shots appear in the file.
-  - Why: Shots and chances are what the narrative talks about most.
-- [ ] **w1-5b · Simulator: goals and kick-offs, then sanity check** · 45 min · with Claude
-  - Do:
-    1. After a goal, emit `goal`, then `kickoff` for the other team.
-    2. Load the file in pandas and count event types.
+    1. Load the file in pandas and work out the score: it must be 3–1.
+    2. Plot all 42 shots on a pitch with mplsoccer (`pitch_type="statsbomb"`), sized by xG.
   - Command:
     ```python
     import pandas as pd
-    df = pd.read_json("data/match_001.jsonl", lines=True)
+    df = pd.read_json("data/match_3754033.jsonl", lines=True)
     print(df["type"].value_counts())
     ```
-  - Done when: Hundreds of passes, 10–30 shots, 0–6 goals.
-  - Why: If the numbers look like real football, everything built on top will feel real too.
+  - Done when: Score 3–1, and the shot map shows 42 shots with Vardy's penalty as one of the biggest dots.
+  - Why: A known answer checks the whole converter at once, like pinging a known host after a routing change.
 - [ ] **w1-6 · Watch the livestream** · 1 h · by hand · fixed time: Wed Oct 14 · 12:00
   - Do:
     1. Watch live.
@@ -201,18 +202,18 @@ Dates: Mon Oct 12 – Sun Oct 18 (2026-10-12 → 2026-10-18) · Total: ≈6 h 15
 
 ## Week 2 · From events to football facts
 
-Dates: Mon Oct 19 – Sun Oct 25 (2026-10-19 → 2026-10-25) · Total: ≈5 h 30 min · **Win:** Tested numbers: possession, field tilt, PPDA.
+Dates: Mon Oct 19 – Sun Oct 25 (2026-10-19 → 2026-10-25) · Total: ≈4 h 45 min · **Win:** Tested numbers: possession, field tilt, PPDA.
 
 - [ ] **w2-1 · Replay events like a live feed** · 45 min · with Claude
   - Do:
-    1. In `src/ingest/replay.py`, read the JSONL in time order.
+    1. In `src/ingest/replay.py`, read the JSONL in order (sorted by `id`, the StatsBomb index).
     2. Yield one event at a time, with a speed factor (e.g. 20× real time).
   - Done when: Events print with short pauses between them.
   - Why: Broadcasters get events as they happen. Later you swap the file reader for Event Hubs without touching anything else.
 - [ ] **w2-2 · Build the match state** · 1 h · with Claude
   - Do:
     1. In `src/interpret/state.py`, make a `MatchState` class.
-    2. Update it on every event: score, on-ball events per team, events in the last 5 minutes, passes per team per third.
+    2. Update it on every event: score (goals + own goals), on-ball events per team, events in the last 5 minutes, passes per team per third.
   - Done when: After a full replay, the score matches the goals in the file.
   - Why: One source of truth that every metric reads, like a routing table.
 - [ ] **w2-3a · Possession % (test first)** · 1 h · with Claude
@@ -231,22 +232,14 @@ Dates: Mon Oct 19 – Sun Oct 25 (2026-10-19 → 2026-10-25) · Total: ≈5 h 30
   - Do:
     1. Test first, then function.
     2. PPDA = opponent passes in their own defensive 60% ÷ your tackles + interceptions in that same zone.
-    3. Coordinates are team-relative, so the zone flips: it's x < 63 in the opponent's events and x > 42 in your events (105 − 63 = 42).
+    3. Coordinates are team-relative, so the zone flips: it's x < 72 in the opponent's events and x > 48 in your events (120 − 72 = 48). Your defensive actions are tackles (Duel: Tackle) and interceptions.
     4. Add one test that checks the zone from both teams' sides.
     5. Lower PPDA = harder pressing.
   - Done when: pytest is green.
   - Why: The standard pressing stat. As a coach you already know what it means on the grass.
-- [ ] **w2-4 · Realism check against StatsBomb** · 45 min · with Claude · optional
-  - Do:
-    1. Load one open-data match with statsbombpy.
-    2. Compare passes, shots and pass completion with your synthetic match.
-    3. Tune your probabilities if they're far off.
-  - Done when: Your numbers are in the same range.
-  - Why: Reference only, not in your product. Credit StatsBomb if you mention it.
-
 ## Week 3 · Milestone 1: local demo (MILESTONE)
 
-Dates: Mon Oct 26 – Sun Nov 1 (2026-10-26 → 2026-11-01) · Total: ≈6 h 15 min · **Win:** A match replays in your browser with live stats and fact cards.
+Dates: Mon Oct 26 – Sun Nov 1 (2026-10-26 → 2026-11-01) · Total: ≈6 h 45 min · **Win:** Leicester–Everton replays in your browser with live stats and template insights.
 
 - [ ] **w3-1 · Momentum metric (with a test)** · 45 min · with Claude
   - Do:
@@ -254,20 +247,27 @@ Dates: Mon Oct 26 – Sun Nov 1 (2026-10-26 → 2026-11-01) · Total: ≈6 h 15 
     2. Write the test, then the function.
   - Done when: pytest is green.
   - Why: Momentum swings are the moments commentators talk about.
-- [ ] **w3-2a · Fact cards: momentum swing + shot cluster** · 1 h · with Claude
+- [ ] **w3-2a · Fact cards: goals, late drama, big chances, set pieces** · 1 h · with Claude
   - Do:
-    1. In `src/interpret/detectors.py`, write two detectors.
-    2. Shot cluster = 3+ shots in 5 minutes.
-    3. Each returns a dict: type, minute, team, metrics, evidence_ids.
-  - Done when: A replay produces some cards.
+    1. In `src/interpret/detectors.py`, write the detectors for Goal in context (10), Late drama (10), Big chance (9) and Set-piece threat (8). Rules are in the `football-metrics` skill.
+    2. Each returns a card: card_id, type, priority, clock, team, player, facts, compare, evidence_ids.
+    3. `compare` = this match so far or the opponent for now; season-to-date arrives in w4-0.
+  - Done when: A replay produces cards for all four goals and the 5' and 88' big chances.
   - Why: Fact cards are the bridge from numbers to words. Every AI sentence later must trace back to evidence_ids.
-- [ ] **w3-2b · Fact cards: pressing surge + sense check** · 1 h · with Claude
+- [ ] **w3-2b · Fact cards: pressing, momentum, defensive wall + sense check** · 1 h · with Claude
   - Do:
-    1. Pressing surge = PPDA drops sharply.
-    2. Replay a full match and read every card.
+    1. Detectors for Pressing surge (6), Momentum swing (6) and Defensive wall (5).
+    2. Replay the full match and read every card.
     3. Ask: "Would I tell my U11s this at half-time?"
   - Done when: One replay gives 5–20 cards that make football sense.
   - Why: Your coaching eye is the quality filter no data scientist has.
+- [ ] **w3-2c · Priority queue and cooldowns** · 45 min · with Claude
+  - Do:
+    1. In `src/interpret/queue.py`: merge cards about the same event, show the highest priority, at most one insight per match minute, 5-minute cooldown per player and per topic.
+    2. Goals skip the queue and the cooldown.
+    3. One test per rule.
+  - Done when: pytest is green and a replay shows no two insights in the same minute.
+  - Why: Like alert dedup and suppression windows: without them, the screen floods the way a pager does.
 - [ ] **w3-3a · Streamlit page: score and stats** · 1 h 15 min · with Claude
   - Do:
     1. Use pair mode for this one: ask Claude to write it, then `/explain` the key parts.
@@ -279,22 +279,23 @@ Dates: Mon Oct 26 – Sun Nov 1 (2026-10-26 → 2026-11-01) · Total: ≈6 h 15 
     ```
   - Done when: The score and stats update as the match replays.
   - Why: User experience is a fifth of the brief, and it's what a hiring manager sees first.
-- [ ] **w3-3b · Streamlit page: fact-card feed** · 45 min · with Claude
+- [ ] **w3-3b · Streamlit page: insight feed with templates** · 1 h · with Claude
   - Do:
-    1. Show fact cards in a feed as they appear, newest on top.
-  - Done when: Cards pop up during the replay.
-  - Why: This is the "live insight" experience, without AI yet.
+    1. Write one template line per card type, e.g. `GOAL 65' · Jamie Vardy (penalty) · Leicester City 3–0`.
+    2. Show the queue's insights in a feed as they appear, newest on top, each as its template line.
+  - Done when: Template insights pop up during the replay.
+  - Why: The Nov 1 demo already shows insights without AI, and these templates become the AI's fallback in w4-7.
 - [ ] **w3-3c · Streamlit page: "Why?" pitch view** · 45 min · with Claude
   - Do:
     1. Give each card a **Why?** expander.
-    2. Plot the card's evidence events on a pitch with mplsoccer.
+    2. Plot the card's evidence events on a pitch with mplsoccer (`pitch_type="statsbomb"`).
   - Done when: Clicking Why? shows the events on a pitch.
   - Why: Explainability you can see: the claim and its proof side by side.
 - [ ] **w3-4 · Tag Milestone 1 and show it** · 15 min · with Claude · milestone
   - Do:
     1. Write the devlog entry.
     2. Run the command below.
-    3. Post a screenshot on LinkedIn.
+    3. Post a screenshot on LinkedIn, with the StatsBomb logo.
   - Command:
     ```bash
     git tag v0.1 && git push --tags
@@ -310,7 +311,16 @@ Dates: Mon Oct 26 – Sun Nov 1 (2026-10-26 → 2026-11-01) · Total: ≈6 h 15 
 
 ## Week 4 · Azure and your first AI call
 
-Dates: Mon Nov 2 – Sun Nov 8 (2026-11-02 → 2026-11-08) · Total: ≈4 h 15 min · **Win:** One AI-written insight. No API key. No wrong numbers.
+Dates: Mon Nov 2 – Sun Nov 8 (2026-11-02 → 2026-11-08) · Total: ≈6 h · **Win:** One AI-written insight with season context. No API key. No wrong numbers.
+
+- [ ] **w4-0 · Season baselines** · 1 h + download time · with Claude
+  - Do:
+    1. Download all 380 event files for 2015/16 into `data/raw/` (≈1.13 GB, git-ignored).
+    2. Compute team and player totals and league ranks by date. Use only matches played BEFORE the replayed match.
+    3. Save one small summary file, `data/season_baselines.json` (this one is committed).
+    4. Add season-to-date `compare` to the goal cards.
+  - Done when: Vardy shows 22 league goals before 2016-05-07, and the 65' penalty card says his 24th.
+  - Why: "His 24th of the season" is what fans want. "Earlier matches only" is like a point-in-time restore: no data from the future.
 
 - [ ] **w4-1 · Create your Azure free account** · 30 min · by hand
   - Do:
@@ -351,17 +361,24 @@ Dates: Mon Nov 2 – Sun Nov 8 (2026-11-02 → 2026-11-08) · Total: ≈4 h 15 m
 - [ ] **w4-5 · Narrator: one fact card → one insight** · 1 h · with Claude
   - Do:
     1. In `src/explain/narrator.py`, send ONE fact card.
-    2. Instructions: two sentences, use only numbers in the card.
-    3. Ask for JSON back: headline, text_en, text_fr, evidence_ids.
-  - Done when: Valid JSON for five different cards.
+    2. Ask for JSON wording with named slots, e.g. `{player_surname}`, `{xg_pct}`, `{goals_season_ord}`. The model never types numbers.
+    3. Code fills the slots from the card.
+  - Done when: Valid, filled wording for five different cards.
   - Why: Get the simplest version working before adding agents. If this fails, agents won't fix it.
-- [ ] **w4-6 · Verifier in plain code** · 1 h · with Claude
+- [ ] **w4-6 · Verifier in plain code** · 1 h 15 min · with Claude
   - Do:
-    1. In `src/explain/verify.py`, pull every number and event ID out of the text.
-    2. Check each one exists in the card.
-    3. Fail → ask for one rewrite. Fail again → drop the insight.
-  - Done when: A planted "he scored 7 goals" gets rejected.
-  - Why: A broadcaster can never show a wrong stat on air. Code can't hallucinate.
+    1. In `src/explain/verify.py`, reject text with a number or number word ("fourth", "twice", "hat-trick") that didn't come from a slot.
+    2. Reject names not in the card (surname alone is allowed), comparisons ("most", "season high") with no `compare` field, and body or intelligence words ("pacy", "clever") with no card field.
+    3. Fail → ask for one rewrite. Fail again → template.
+  - Done when: A planted "his fourth hat-trick" and a planted "pacy Vardy" both get rejected.
+  - Why: A broadcaster can never show a wrong stat on air. Code can't hallucinate, and the bias guard is also a StatsBomb licence rule.
+- [ ] **w4-7 · Template fallback** · 30 min · with Claude
+  - Do:
+    1. Reuse the w3-3b templates as the fallback.
+    2. The AI gets 1.2 seconds of real time and one retry; then the template goes out.
+    3. Log `source: ai` or `source: template` for every insight.
+  - Done when: With the model switched off, the replay still shows every insight, logged as `source: template`.
+  - Why: Like a failover link: the screen never goes blank because one dependency is slow.
 
 ## Week 5 · Agents and personalization
 
@@ -423,8 +440,9 @@ Dates: Mon Nov 16 – Sun Nov 22 (2026-11-16 → 2026-11-22) · Total: ≈6 h 15
 - [ ] **w6-1 · Write the Dockerfile** · 45 min · with Claude
   - Do:
     1. Add the Azure packages from weeks 4–5 to requirements.txt.
-    2. Make the app run the simulator at start-up if the match file is missing.
-    3. Create the Dockerfile below, then build and run it.
+    2. Make the app fetch and convert match 3754033 at start-up if `data/match_3754033.jsonl` is missing.
+    3. Add a `.dockerignore` with `data/raw/` and `data/*.jsonl`: no raw or converted event files in the image.
+    4. Create the Dockerfile below, then build and run it.
   - Command:
     ```dockerfile
     FROM python:3.12-slim
@@ -433,12 +451,12 @@ Dates: Mon Nov 16 – Sun Nov 22 (2026-11-16 → 2026-11-22) · Total: ≈6 h 15
     COPY requirements.txt .
     RUN pip install --no-cache-dir -r requirements.txt
     COPY src/ src/
-    COPY data/teams.json data/teams.json
+    COPY data/season_baselines.json data/season_baselines.json
     EXPOSE 8501
     CMD ["streamlit", "run", "src/app/main.py", "--server.address", "0.0.0.0", "--server.port", "8501"]
     ```
   - Done when: `docker build -t football-insights .` then `docker run -p 8501:8501 football-insights` opens the app.
-  - Why: A container runs the same everywhere. You already know this from your Docker study.
+  - Why: A container runs the same everywhere. Fetching at start-up keeps StatsBomb data out of a public image, as the licence requires.
 - [ ] **w6-2 · Deploy to Azure Container Apps** · 1 h · with Claude
   - Do:
     1. Check the code uses `DefaultAzureCredential` everywhere (you switched in w4-4).
@@ -457,9 +475,9 @@ Dates: Mon Nov 16 – Sun Nov 22 (2026-11-16 → 2026-11-22) · Total: ≈6 h 15
   - Why: The managed identity is the app's own account, like a computer account in Active Directory. No secrets exist anywhere.
 - [ ] **w6-3 · Logs you can quote** · 30 min · with Claude
   - Do:
-    1. Print one JSON log line per insight: latency, tokens, verifier pass or fail.
+    1. Print one JSON log line per insight: time from event to screen, tokens, verifier pass or fail, `source` (ai or template).
     2. Query them in Log Analytics with KQL.
-  - Done when: One KQL query returns your pass rate.
+  - Done when: One KQL query returns your pass rate and fallback rate.
   - Why: "92% verified, 1.4 s per insight" makes your README and interviews concrete.
 - [ ] **w6-4a · Write the video script** · 30 min · with Claude
   - Do:
@@ -477,7 +495,8 @@ Dates: Mon Nov 16 – Sun Nov 22 (2026-11-16 → 2026-11-22) · Total: ≈6 h 15
 - [ ] **w6-5 · README** · 1 h · with Claude
   - Do:
     1. Pitch paragraph, architecture diagram, run steps, your numbers from the logs.
-    2. Add: "Independent project inspired by the Microsoft × Premier League Inside the Game brief. Not an official entry. All data synthetic, all clubs and players fictional."
+    2. Add: "Independent project inspired by the Microsoft × Premier League Inside the Game brief. Not an official entry. Data: StatsBomb open data (Premier League 2015/16), not for commercial use."
+    3. Add the StatsBomb logo.
   - Done when: README is pushed.
   - Why: Honest and clear beats flashy. It shows professionalism.
 - [ ] **w6-6a · Blog post** · 1 h · with Claude
@@ -501,6 +520,23 @@ Dates: Mon Nov 16 – Sun Nov 22 (2026-11-16 → 2026-11-22) · Total: ≈6 h 15
 ## Later (from December)
 
 Ideas live in `docs/parking-lot.md`. Top candidates: CI/CD with GitHub Actions and OIDC, Event Hubs ingestion, an MCP tool server, Fabric Real-Time Intelligence, more detectors and profiles, then the MIT Sloan Sports Analytics Conference hackathon (Feb 2027).
+
+## Changes from the Oct 9, 2026 review (StatsBomb + UK insights)
+
+- **Data:** real StatsBomb open data (Premier League 2015/16) replaces the simulator. Demo match: Leicester 3–1 Everton, 2016-05-07. Licence rules in `docs/DATA.md`; product brief in `docs/brief.md`.
+- **w1-0 (new):** register with StatsBomb, 5 min.
+- **w1-2:** StatsBomb fields, 120 × 80 pitch, `src/ingest/schema.py`.
+- **w1-3, w1-4a, w1-4b, w1-5:** fetch, converter, clock and own goals, sanity check replace the team file and simulator (−1 h 15 net).
+- **w2-3c:** PPDA zone is now x < 72 / x > 48.
+- **w2-4 removed:** no realism check needed on real data.
+- **w3-2a, w3-2b:** the seven UK insight types, cards with `priority` and `compare`.
+- **w3-2c (new):** priority queue and cooldowns, +45 min.
+- **w3-3b:** template insights in the feed, +15 min.
+- **w4-0 (new):** season baselines, earlier matches only, +1 h.
+- **w4-5, w4-6:** slot wording; verifier also checks names, number words, comparisons and the bias guard (+15 min).
+- **w4-7 (new):** template fallback with a 1.2 s budget, +30 min.
+- **w6-1, w6-3, w6-5:** no event files in the image; event-to-screen time and fallback rate in logs; StatsBomb credit in the README.
+- **Totals:** 36 h 30 → 38 h 20 required.
 
 ## Changes from the Oct 8, 2026 review
 
