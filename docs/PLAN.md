@@ -28,7 +28,7 @@ Dates: Thu Oct 8 – Sun Oct 11 (2026-10-08 → 2026-10-11) · Total: ≈2 h 45 
     3. Pin it where you'll see it.
   - Done when: The sentence is saved and pinned.
   - Why: When a shiny new idea appears, ask: "Does this help the goal?" If not, run `/park` and keep going.
-- [ ] **w0-2 · Register for the free Oct 14 livestream** · 5 min · by hand
+- [x] **w0-2 · Register for the free Oct 14 livestream** · 5 min · by hand
   - Do:
     1. Open the event page.
     2. Sign in with your **personal** Microsoft account.
