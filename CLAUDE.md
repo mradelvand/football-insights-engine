@@ -30,7 +30,7 @@ The plan, progress and dates live in `docs/PLAN.md`. That file is the source of 
 ## Project essentials
 
 - Design rule: **code computes the facts → AI writes the words → code checks the words against the facts.** The verifier is plain Python, never a model.
-- The AI returns wording with named slots (e.g. `{player_surname}`, `{xg_pct}`) and code fills the values, so the model never types numbers. The verifier rejects unslotted numbers or number words, names not in the card, comparisons with no `compare` field, and body or intelligence words with no card field; after 1.2 s or a second failure, a template line goes out instead.
+- The AI returns wording with named slots (e.g. `{player_surname}`, `{xg_pct}`) and code fills the values, so the model never types numbers. The verifier rejects unslotted numbers or number words, names not in the card, comparisons with no `compare` field (including win probabilities from Elo, which gives an expected score), and body or intelligence words with no card field; after 1.2 s or a second failure, a template line goes out instead.
 - Pipeline and folders: Fetch + Ingest (`src/ingest`: download, StatsBomb adapter, `schema.py`, replay) → Interpret (`src/interpret`) → Explain (`src/explain`) → Render (`src/render`) → Personalize (`src/personalize`); UI in `src/app`; tests in `tests`; raw StatsBomb files in `data/raw/` and converted matches in `data/*.jsonl` (both git-ignored).
 - Event schema, coordinates and metric definitions: see the `football-metrics` skill.
 - Run tests: `pytest` (from the repo root). Run the app: `PYTHONPATH=. streamlit run src/app/main.py`.

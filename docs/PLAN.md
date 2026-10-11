@@ -1,10 +1,10 @@
 # Football Insights Engine — Game Plan
 
-Independent portfolio build of the Microsoft × Premier League "Inside the Game" brief (Québec residents can't officially enter), on real StatsBomb open data (Premier League 2015/16). 56 steps, Oct 8 → Nov 22, 2026. What it does: `docs/brief.md`. Data licence: `docs/DATA.md`.
+Independent portfolio build of the Microsoft × Premier League "Inside the Game" brief (Québec residents can't officially enter), on real StatsBomb open data (Premier League 2015/16). 57 steps, Oct 8 → Nov 22, 2026. What it does: `docs/brief.md`. Data licence: `docs/DATA.md`.
 
 - **Milestone 1 · Sun Nov 1, 2026:** local demo, no AI. Leicester 3–1 Everton replays in the browser with live stats and template insights.
 - **Milestone 2 · Sun Nov 22, 2026:** deployed on Azure with AI agents, a video under 2 minutes, README and blog post.
-- **Time:** about 38 h 20 min of required steps. With a 25% learning buffer that's about 7.5 h a week, the top of a 5–8 h range. If week 1 runs late, start cutting early.
+- **Time:** about 39 h 35 min of required steps. With a 25% learning buffer that's about 7.5 h a week, the top of a 5–8 h range. If week 1 runs late, start cutting early.
 
 ## How to read this file
 
@@ -311,16 +311,25 @@ Dates: Mon Oct 26 – Sun Nov 1 (2026-10-26 → 2026-11-01) · Total: ≈6 h 45 
 
 ## Week 4 · Azure and your first AI call
 
-Dates: Mon Nov 2 – Sun Nov 8 (2026-11-02 → 2026-11-08) · Total: ≈6 h · **Win:** One AI-written insight with season context. No API key. No wrong numbers.
+Dates: Mon Nov 2 – Sun Nov 8 (2026-11-02 → 2026-11-08) · Total: ≈7 h 15 min · **Win:** One AI-written insight with season and pre-match context. No API key. No wrong numbers.
 
-- [ ] **w4-0 · Season baselines** · 1 h + download time · with Claude
+- [ ] **w4-0 · Season baselines** · 1 h 45 min + download time · with Claude
   - Do:
     1. Download all 380 event files for 2015/16 into `data/raw/` (≈1.13 GB, git-ignored).
     2. Compute team and player totals and league ranks by date. Use only matches played BEFORE the replayed match.
     3. Save one small summary file, `data/season_baselines.json` (this one is committed).
-    4. Add season-to-date `compare` to the goal cards.
-  - Done when: Vardy shows 22 league goals before 2016-05-07, and the 65' penalty card says his 24th.
+    4. Add Elo, form (last 5), unbeaten/winless runs and head-to-head per team, per date, to the same file. Rules in the `football-metrics` skill: start 1500, home +60, K = 20, same-day matches excluded.
+    5. Test first, with the known values: Elo Leicester 1624 (1st), Tottenham 1602 (2nd), Arsenal 1571 (3rd), Everton 1484 (11th); expected score 0.76; form Leicester W W D W D, Everton D D D L W; Leicester unbeaten in 10; earlier meeting 2015-12-19, Everton 2–3 Leicester City.
+    6. Add season-to-date `compare` to the goal cards.
+  - Done when: Vardy shows 22 league goals before 2016-05-07, the 65' penalty card says his 24th, and the Elo tests are green.
   - Why: "His 24th of the season" is what fans want. "Earlier matches only" is like a point-in-time restore: no data from the future.
+- [ ] **w4-0b · Pre-match card and upset watch** · 30 min · with Claude
+  - Do:
+    1. Pre-match context card, shown at kickoff and half-time outside the live queue: Elo rank for both teams, the Elo favourite, form, runs of 5+, earlier meeting.
+    2. Upset watch (priority 7): fires when the team that wasn't the Elo favourite takes the lead, once per lead change.
+    3. Tests: hand-made events where the underdog scores first; then replay 3753976 (Arsenal 1–2 Swansea): it fires once, at 74' (index 3201).
+  - Done when: pytest is green and the Leicester–Everton pre-match card reads right.
+  - Why: Form guides and giant-killings are what UK fans talk about before and during a match. Elo is a cheap, tested model the AI can only quote, never invent.
 
 - [ ] **w4-1 · Create your Azure free account** · 30 min · by hand
   - Do:
@@ -368,7 +377,7 @@ Dates: Mon Nov 2 – Sun Nov 8 (2026-11-02 → 2026-11-08) · Total: ≈6 h · *
 - [ ] **w4-6 · Verifier in plain code** · 1 h 15 min · with Claude
   - Do:
     1. In `src/explain/verify.py`, reject text with a number or number word ("fourth", "twice", "hat-trick") that didn't come from a slot.
-    2. Reject names not in the card (surname alone is allowed), comparisons ("most", "season high") with no `compare` field, and body or intelligence words ("pacy", "clever") with no card field.
+    2. Reject names not in the card (surname alone is allowed), comparisons ("most", "season high") with no `compare` field, win probabilities drawn from Elo ("a 76% chance"), and body or intelligence words ("pacy", "clever") with no card field.
     3. Fail → ask for one rewrite. Fail again → template.
   - Done when: A planted "his fourth hat-trick" and a planted "pacy Vardy" both get rejected.
   - Why: A broadcaster can never show a wrong stat on air. Code can't hallucinate, and the bias guard is also a StatsBomb licence rule.
@@ -520,6 +529,13 @@ Dates: Mon Nov 16 – Sun Nov 22 (2026-11-16 → 2026-11-22) · Total: ≈6 h 15
 ## Later (from December)
 
 Ideas live in `docs/parking-lot.md`. Top candidates: CI/CD with GitHub Actions and OIDC, Event Hubs ingestion, an MCP tool server, Fabric Real-Time Intelligence, more detectors and profiles, then the MIT Sloan Sports Analytics Conference hackathon (Feb 2027).
+
+## Changes from the Oct 11, 2026 review (pre-match context)
+
+- **w4-0:** adds Elo, form, unbeaten runs and head-to-head, with known values as tests, +45 min.
+- **w4-0b (new):** pre-match context card and upset watch, 30 min. Second demo match: 3753976, Arsenal 1–2 Swansea.
+- **w4-6:** the verifier also rejects Elo win-probability wording.
+- **Totals:** 38 h 20 → 39 h 35 required.
 
 ## Changes from the Oct 9, 2026 review (StatsBomb + UK insights)
 

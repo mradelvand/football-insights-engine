@@ -25,16 +25,19 @@ If you know monitoring, it's the same shape:
 | Late drama | A goal or big chance from 85' | 10 |
 | Big chance | A shot with xG of 0.30 or more | 9 |
 | Set-piece threat | A team's 3rd set-piece shot in 15 minutes | 8 |
+| Upset watch | The team that wasn't the Elo favourite takes the lead | 7 |
 | Pressing surge | PPDA halves against the previous 10 minutes | 6 |
 | Momentum swing | One team's threatening actions overtake the other's over 5 minutes | 6 |
 | Defensive wall | A player reaches 10 defensive actions | 5 |
+
+Before kickoff and at half-time, a **pre-match context** card adds the form guide: Elo rank, the Elo favourite, last 5 results, unbeaten runs and the earlier meeting this season. Elo uses only matches played before the replayed one.
 
 (PPDA = how many passes the other team makes before your team wins or contests the ball. Lower means harder pressing.)
 
 **Selection, wording and checks**
 - Queue: merge cards about the same event; show the highest priority; at most one insight per match minute; a 5-minute cooldown per player and per topic. Goals skip the queue and the cooldown.
 - Narrator: returns JSON wording with named slots, e.g. `{player_surname}`, `{xg_pct}`, `{goals_season_ord}`. Code fills the values. The model never types numbers.
-- Verifier (plain code) rejects text that has: a number or number word ("fourth", "twice", "hat-trick") that didn't come from a slot; a name that isn't in the card (surname alone is allowed); a comparison ("most", "first since", "season high") with no `compare` field behind it; a word about a player's body or intelligence ("powerful", "pacy", "clever") with no card field behind it (also a StatsBomb licence rule).
+- Verifier (plain code) rejects text that has: a number or number word ("fourth", "twice", "hat-trick") that didn't come from a slot; a name that isn't in the card (surname alone is allowed); a comparison ("most", "first since", "season high") with no `compare` field behind it, including any win probability drawn from Elo (Elo gives an expected score, so "Elo favourites" is fine but "a 76% chance of winning" is not); a word about a player's body or intelligence ("powerful", "pacy", "clever") with no card field behind it (also a StatsBomb licence rule).
 - Fallback: one template line per card type. The AI gets 1.2 seconds of real time and one retry, then the template goes out. Logged as `source: ai` or `source: template`.
 
 **One insight, end to end (real data)**

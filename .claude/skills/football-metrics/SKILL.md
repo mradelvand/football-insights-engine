@@ -1,6 +1,6 @@
 ---
 name: football-metrics
-description: Event schema, StatsBomb conversion rules, pitch coordinates, match clock, metric definitions (possession, field tilt, PPDA, momentum, xG), insight types and the fact-card format for this project. Use when writing or reviewing code in src/ingest, src/interpret, src/explain, or tests for them.
+description: Event schema, StatsBomb conversion rules, pitch coordinates, match clock, metric definitions (possession, field tilt, PPDA, momentum, xG), Elo, form and head-to-head, insight types and the fact-card format for this project. Use when writing or reviewing code in src/ingest, src/interpret, src/explain, or tests for them.
 user-invocable: false
 ---
 
@@ -51,6 +51,25 @@ StatsBomb `minute` counts minutes already played; TV shows the minute in progres
 - **Momentum:** rolling count, per team, of final-third entries + shots over the last 5 minutes.
 - **Season baselines:** only matches played on dates BEFORE the replayed match. No future data.
 
+## Elo, form and head-to-head (season baselines, w4-0)
+
+- Every club starts at 1500 before matchweek 1 of 2015/16.
+- Process earlier matches in order of `match_date`, then `kick_off`, then `match_id`. Only dates BEFORE the replayed match count; same-day matches are excluded.
+- Expected score for the home team: `E = 1 / (1 + 10 ** ((away_elo - (home_elo + 60)) / 400))`. The 60 is home advantage.
+- Result S: home win 1, draw 0.5, loss 0. Update with K = 20: `home += 20 * (S - E)`, `away -= 20 * (S - E)`.
+- **Elo favourite:** the home team if E ≥ 0.5, otherwise the away team.
+- **Form:** last 5 league results per team, oldest to newest (W/D/L). **Unbeaten run:** consecutive matches without a loss (winless run likewise).
+- **Head-to-head:** earlier meetings this season, with date and score.
+- Saved per team, per date in the same small season summary file as the other baselines.
+- **Wording rule:** Elo gives an expected score, not a win probability. Text may say "Elo favourites" or "ranked 1st on Elo"; it must never say "a 76% chance of winning". The verifier rejects it as an unbacked comparison.
+
+Test values (356 matches before 2016-05-07; Elo to the nearest whole number, ±1 is fine):
+- Elo: Leicester City 1624 (1st), Tottenham Hotspur 1602 (2nd), Arsenal 1571 (3rd), Everton 1484 (11th).
+- Expected score, Leicester at home to Everton: 0.76.
+- Last 5, oldest to newest: Leicester W W D W D; Everton D D D L W.
+- Leicester unbeaten in 10 before this match.
+- Earlier meeting: 2015-12-19, Everton 2–3 Leicester City.
+
 ## Insight types (`src/interpret/detectors.py`)
 
 Thresholds are starting values to tune.
@@ -63,7 +82,12 @@ Thresholds are starting values to tune.
 | Set-piece threat | A team's 3rd set-piece shot within 15 minutes | 8 |
 | Pressing surge | A team's PPDA over the last 10 minutes is half or less of the 10 minutes before | 6 |
 | Momentum swing | Over 5 minutes, one team's final-third entries + shots overtake the other's by 3 or more | 6 |
+| Upset watch | The team that was NOT the Elo favourite takes the lead. Once per lead change | 7 |
 | Defensive wall | A player reaches 10 defensive actions (tackles, interceptions, clearances, blocks) | 5 |
+
+**Pre-match context** is shown at kickoff and half-time, outside the live queue. Facts: Elo rank for both teams, the Elo favourite, both teams' form, unbeaten or winless runs of 5 or more, earlier meeting this season. Example: "Leicester come in top of the Elo table and unbeaten in 10. They won the reverse fixture 3–2 at Everton in December."
+
+Upset watch never fires in match 3754033 (Leicester, the favourites, lead from 5'). Test it with hand-made events where the underdog scores first, and with the second demo match below.
 
 ## Fact cards
 
@@ -92,3 +116,13 @@ Shape: `{card_id, type, priority, clock, team, player, facts: {...}, compare: {.
 
 - Final score in the converted file: 3–1. 42 shots; 3,269 events.
 - Season check: Vardy had 22 league goals before 2016-05-07, so the 65' penalty must be his 24th. If not, the "earlier matches only" rule is broken.
+
+## Second demo match for Upset watch: 3753976, Arsenal 1–2 Swansea City (2016-03-02)
+
+Pre-match Elo: Arsenal favourites, expected score 0.72 at home (the biggest upset of the season by Elo).
+
+| Shown | Index | Goal | Upset watch |
+|---|---|---|---|
+| 15' | 733 | Campbell, Arsenal (xG 0.21) | no (favourite leads) |
+| 32' | 1537 | Routledge, Swansea, from a counter (xG 0.28) | no (level) |
+| 74' | 3201 | Ashley Williams, Swansea, from a free kick (xG 0.50) | **fires once** |

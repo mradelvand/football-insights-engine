@@ -11,3 +11,4 @@ Ideas for later, so they don't derail today's step. Add with `/park <idea>`.
 - 2026-10-08: MIT Sloan Sports Analytics Conference hackathon (applications likely early Feb 2027; conference Feb 25–26, 2027, Boston). Check eligibility for Québec first.
 - 2026-10-08: SSAC research paper competition, soccer track (next cycle likely autumn 2027)
 - 2026-10-09: FPL-manager profile: highlights defensive actions and chances created
+- 2026-10-11: Ask the commentator (December): a Foundry agent whose tools call our Python functions (served from FastAPI on Container Apps, or the MCP server idea). Answers pass the same verifier. If no tool covers a question, it says so instead of guessing. Azure AI Search hybrid search only if we add text search over match reports.
