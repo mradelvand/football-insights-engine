@@ -33,3 +33,4 @@ htmlcov/
 data/*.jsonl
 CLAUDE.local.md
 data/raw/
+.claude/settings.local.json
