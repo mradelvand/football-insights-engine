@@ -119,7 +119,7 @@ Dates: Thu Oct 8 – Sun Oct 11 (2026-10-08 → 2026-10-11) · Total: ≈2 h 45 
   - Done when: Your file has one JSON object per line.
   - Why: That exact format (JSON Lines) is how your match events will be stored.
   - Link: [Open dataclasses](https://docs.python.org/3/library/dataclasses.html)
-- [ ] **w0-9 · Write your first devlog entry** · 5 min · with Claude
+- [x] **w0-9 · Write your first devlog entry** · 5 min · with Claude
   - Do:
     1. After your last step today, run `/done` and choose "stop for today".
     2. Give it 3 short lines: did, learned, next.
