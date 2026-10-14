@@ -58,9 +58,9 @@ Before kickoff and at half-time, a **pre-match context** card adds the form guid
 | 1. Fetch | StatsBomb files → data/raw/ (git-ignored) | Python | No |
 | 2. Ingest | StatsBomb events → our Event format → one event at a time, "live" at 20× speed | Python adapter + generator | No |
 | 3. Interpret | Rolling stats (5 min, 15 min, half, match) → fact cards with a comparison → priority queue | Python + pytest | No |
-| 4. Explain | Top card → wording with slots → filled and verified, or a template line | Microsoft Foundry Narrator agent + code verifier; Analyst agent for half-time and full-time recaps | Only here |
+| 4. Explain | Top card → wording with slots → filled and verified, or a template line | Microsoft Foundry Narrator agent (one read-only tool) + code verifier; an eval gate picks the model | Only here |
 | 5. Render | Insight → timed overlay JSON with the match clock | Python | No |
-| 6. Personalize | Same facts → analyst or casual-fan wording, English (French optional) | Narrator + Streamlit page | Via the Narrator |
+| 6. Personalize | Same facts → analyst or casual-fan wording, in English | Narrator + Streamlit page | Via the Narrator |
 
 **The platform**
 - The development machine is one file (the dev container), so it can be rebuilt identically any time.

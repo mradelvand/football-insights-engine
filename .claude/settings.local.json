@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp /tmp/claude-0/-home-user-football-insights-engine/f3203ba4-4046-56f0-b180-85d6b1afcf69/scratchpad/presentation-and-plan-review.md docs/presentation-prompts.md)",
+      "Bash(sed -i 's/^## 3. Plan additions \\(proposal\\)$/## 3. Plan additions \\(applied Oct 14, 2026, with the Analyst agent and French output cut; see docs\\\\/PLAN.md\\)/' docs/presentation-prompts.md)",
+      "Bash(git add *)",
+      "Bash(git commit -qm 'Plan: production polish inspired by Brian Benz'\\\\''s demo *)"
+    ]
+  }
+}
