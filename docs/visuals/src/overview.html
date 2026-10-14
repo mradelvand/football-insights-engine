@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Football Insights Engine · overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Football Insights Engine · shared design system (inlined into every page) */
+:root{
+  --bg:#0b0f0e; --card:#121a17; --card2:#0e1513; --border:#22302a; --border2:#2e3f37;
+  --text:#e6ece9; --muted:#8fa39a;
+  --green:#2fd17a; --yellow:#f5c84b; --blue:#4aa3ff; --pink:#d9709c; --red:#ff6b6b;
+  --green-t:rgba(47,209,122,.10); --blue-t:rgba(74,163,255,.10); --red-t:rgba(255,107,107,.10); --yellow-t:rgba(245,200,75,.10); --pink-t:rgba(217,112,156,.12);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+.cond{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.muted{color:var(--muted)}
+.g{color:var(--green)} .y{color:var(--yellow)} .b{color:var(--blue)} .p{color:var(--pink)} .r{color:var(--red)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px}
+.label{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
+.h-sec{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;letter-spacing:.06em;text-transform:uppercase;line-height:1}
+.h-sec .n{color:var(--green)}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;white-space:nowrap;border:1px solid var(--border2);background:var(--card2);line-height:1.35}
+.pill.green{border-color:var(--green);color:var(--green)}
+.pill.yellow{border-color:var(--yellow);color:var(--yellow)}
+.pill.blue{border-color:var(--blue);color:var(--blue)}
+.pill.pink{border-color:var(--pink);color:var(--pink)}
+.pill.red{border-color:var(--red);color:var(--red)}
+.pill.solid-green{background:var(--green);border-color:var(--green);color:#06120c;font-weight:600}
+.pill.solid-yellow{background:var(--yellow);border-color:var(--yellow);color:#1a1404;font-weight:600}
+.ico{fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
+.tile{display:flex;align-items:center;justify-content:center;flex:none;border-radius:10px;background:var(--card2);border:1px solid var(--border2);color:var(--green)}
+.logo-box{border:1.5px dashed #3d5248;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.prio{display:flex;align-items:center;justify-content:center;flex:none;border-radius:50%;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+.prio.hi{background:var(--green);color:#06120c}
+.prio.mid{border:1.5px solid var(--green);color:var(--green)}
+.prio.lo{border:1.5px solid #4b6358;color:var(--text)}
+.formsq{display:inline-flex;align-items:center;justify-content:center;border-radius:4px;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+.formsq.W{background:var(--green);color:#06120c}
+.formsq.D{background:#4b6358;color:var(--text)}
+.formsq.L{background:var(--red);color:#1a0606}
+
+/* 1920 x 1080 slide frame */
+.slide{position:relative;width:1920px;height:1080px;overflow:hidden;padding:72px 88px 0}
+.slide .s-label{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:24px;letter-spacing:.1em;text-transform:uppercase;color:var(--green)}
+.slide .s-title{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:76px;line-height:1.02;margin:10px 0 0}
+.slide .s-sub{font-size:24px;color:var(--muted);margin-top:12px}
+.slide .s-foot{position:absolute;left:88px;bottom:36px;font-size:17px;color:var(--muted)}
+.slide .s-num{position:absolute;right:88px;bottom:32px;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:26px;color:var(--muted)}
+
+/* overview-only */
+.ov{position:relative;width:2400px;height:1350px;overflow:hidden}
+.abs{position:absolute}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;display:flex;flex-direction:column;gap:14px}
+.pcard{width:348px;height:196px;flex:none;padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.pcard .top{display:flex;align-items:center;justify-content:space-between;height:44px}
+.pcard .name{font-size:26px;line-height:1;letter-spacing:.02em}
+.pcard .name .n{color:var(--green);margin-right:6px}
+.pcard .desc{font-size:15.5px;line-height:1.45;color:#bccac3}
+.arrow{width:40px;flex:none;display:flex;align-items:center;justify-content:center;color:var(--green)}
+.row{display:flex;gap:12px;align-items:flex-start;padding:9px 12px;border-radius:10px;background:var(--card2);border:1px solid var(--border)}
+.row .tag{width:100px;flex:none;font-size:16px;padding-top:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips .pill{font-size:14px}
+.cell{display:flex;align-items:center;gap:10px;height:56px;padding:0 12px;border-radius:10px;background:var(--card2);border:1px solid var(--border)}
+.cell .nm{font-size:16px;font-weight:600;line-height:1.2}
+.cell .rl{font-size:13.5px;color:var(--muted);line-height:1.3}
+.rej{display:flex;gap:12px;align-items:flex-start;padding:9px 14px;border-radius:10px;background:var(--card2);border:1px solid var(--border)}
+.rej .q{font-size:16px;font-weight:600;line-height:1.25}
+.rej .why{font-size:13.5px;color:var(--muted);line-height:1.3}
+.node{width:132px;flex:none;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px}
+.node .lb{font-size:13.5px;font-weight:600;line-height:1.25}
+.node .sb{font-size:12.5px;color:var(--muted);line-height:1.3}
+.narrow{width:18px;height:36px;flex:none;display:flex;align-items:center;justify-content:center;color:#5d776b}
+.dli{display:flex;align-items:center;gap:10px;font-size:15px;line-height:1.35}
+</style>
+</head>
+<body>
+<div class="ov">
+
+<!-- HEADER -->
+<div class="abs" style="left:56px;top:38px;width:2288px">
+  <div class="cond" style="font-size:60px;line-height:1">Football Insights Engine <span class="g">— an AI match commentator you can trust</span></div>
+  <div style="font-size:23px;line-height:1.35;color:var(--muted);margin-top:12px">Replays a real Premier League match event by event. Code computes the facts, AI writes the words, code checks every word.</div>
+</div>
+
+<!-- 1 PIPELINE -->
+<div class="abs h-sec" style="left:56px;top:176px;font-size:20px"><span class="n">1</span> · The pipeline</div>
+<div class="abs" style="left:56px;top:206px;width:2288px;display:flex;align-items:center">
+
+  <div class="card pcard" data-box="p1">
+    <div class="top"><div class="tile" style="width:44px;height:44px"><svg class="ico" width="26" height="26" viewBox="0 0 24 24" stroke-width="1.7"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8.5a4 4 0 0 1 .5 7.97"/><path d="M12 11v9"/><path d="M8.5 16.5 12 20l3.5-3.5"/></svg></div></div>
+    <div class="cond name"><span class="n">01</span>FETCH + VERIFY</div>
+    <div class="desc">StatsBomb open data, PL 2015/16 → <span class="mono" style="font-size:13.5px;color:var(--text)">data/raw</span> (never committed) · SHA-256 + schema check · data version <span class="mono" style="font-size:13.5px;color:var(--text)">dv-…</span></div>
+  </div>
+  <div class="arrow"><svg width="34" height="16" viewBox="0 0 34 16"><path d="M2 8h26" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="m23 3 7 5-7 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+  <div class="card pcard" data-box="p2">
+    <div class="top"><div class="tile" style="width:44px;height:44px"><svg class="ico" width="26" height="26" viewBox="0 0 24 24" stroke-width="1.7"><rect x="2" y="15" width="20" height="5" rx="2.5"/><circle cx="6.5" cy="17.5" r=".8"/><circle cx="12" cy="17.5" r=".8"/><circle cx="17.5" cy="17.5" r=".8"/><rect x="4" y="8" width="6" height="6" rx="1"/><rect x="13" y="5" width="7" height="9" rx="1"/></svg></div></div>
+    <div class="cond name"><span class="n">02</span>INGEST</div>
+    <div class="desc">Events → our format → replayed one by one at 20× speed · TV clock (<span class="mono" style="font-size:13.5px;color:var(--text)">64:49</span> → <span class="y">65'</span>)</div>
+  </div>
+  <div class="arrow"><svg width="34" height="16" viewBox="0 0 34 16"><path d="M2 8h26" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="m23 3 7 5-7 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+  <div class="card pcard" data-box="p3">
+    <div class="top"><div class="tile" style="width:44px;height:44px"><svg class="ico" width="26" height="26" viewBox="0 0 24 24" stroke-width="1.7"><path d="M3 21h18"/><path d="M6 18v-4"/><path d="M10 18V9"/><path d="M14 18v-6"/><circle cx="18.5" cy="6" r="2"/><path d="M18.5 2.6v1.1M18.5 8.3v1.1M15.1 6h1.1M20.8 6h1.1M16.1 3.6l.8.8M20.1 7.6l.8.8M16.1 8.4l.8-.8M20.1 4.4l.8-.8"/></svg></div></div>
+    <div class="cond name"><span class="n">03</span>INTERPRET</div>
+    <div class="desc">Live stats: possession, field tilt, PPDA, momentum, xG, Elo → fact cards → priority queue</div>
+  </div>
+  <div class="arrow"><svg width="34" height="16" viewBox="0 0 34 16"><path d="M2 8h26" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="m23 3 7 5-7 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+  <div class="pcard" data-box="p4" style="border-radius:12px;background:var(--green-t);border:2px solid var(--green)">
+    <div class="top"><div class="tile" style="width:44px;height:44px;background:var(--green);border-color:var(--green);color:#06120c"><svg class="ico" width="26" height="26" viewBox="0 0 24 24" stroke-width="1.8"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2.5V6M15 2.5V6M9 18v3.5M15 18v3.5M2.5 9H6M2.5 15H6M18 9h3.5M18 15h3.5"/><path d="M10 14.8 12 9.2l2 5.6M10.7 12.9h2.6"/></svg></div><span class="pill solid-green cond" style="font-size:15px;letter-spacing:.08em;padding:4px 12px">THE ONLY AI STAGE</span></div>
+    <div class="cond name"><span class="n">04</span>EXPLAIN</div>
+    <div class="desc" style="color:#dbe5e0">Narrator agent writes wording with slots like <span class="mono g" style="font-size:13.5px">{player_surname}</span>; code fills the real values</div>
+  </div>
+  <div class="arrow"><svg width="34" height="16" viewBox="0 0 34 16"><path d="M2 8h26" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="m23 3 7 5-7 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+  <div class="card pcard" data-box="p5">
+    <div class="top"><div class="tile" style="width:44px;height:44px"><svg class="ico" width="26" height="26" viewBox="0 0 24 24" stroke-width="1.7"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6L12 3z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg></div>
+      <div style="display:flex;gap:6px"><span class="pill green" style="font-size:13px">✓ pass</span><span class="pill red" style="font-size:13px">✗ reject</span></div></div>
+    <div class="cond name"><span class="n">05</span>VERIFIER</div>
+    <div class="desc">Plain-code checks: numbers, names, comparisons, bias words. Fail twice or &gt; 1.2 s → template line</div>
+  </div>
+  <div class="arrow"><svg width="34" height="16" viewBox="0 0 34 16"><path d="M2 8h26" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="m23 3 7 5-7 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+  <div class="card pcard" data-box="p6">
+    <div class="top"><div class="tile" style="width:44px;height:44px"><svg class="ico" width="26" height="26" viewBox="0 0 24 24" stroke-width="1.7"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M5.5 13.5h9"/></svg></div></div>
+    <div class="cond name"><span class="n">06</span>RENDER + PERSONALIZE</div>
+    <div class="desc">Timed on-screen overlay with receipts · analyst or casual-fan wording</div>
+  </div>
+</div>
+
+<div class="abs" style="left:56px;top:418px;width:2288px;height:36px;border:1.5px dashed var(--border2);border-radius:999px;display:flex;align-items:center;justify-content:center;gap:18px;font-size:17px;color:#bccac3">
+  <span class="label" style="font-size:16px">If you know monitoring</span>
+  <span>telemetry <span class="g">→</span> metrics <span class="g">→</span> alert rules <span class="g">→</span> alert message <span class="g">→</span> validation <span class="g">→</span> dashboard</span>
+</div>
+
+<!-- 2 ONE INSIGHT -->
+<div class="abs panel" data-box="sec2" style="left:56px;top:478px;width:860px;height:510px">
+  <div class="h-sec" style="font-size:22px"><span class="n">2</span> · One insight, end to end</div>
+  <div style="display:flex;gap:24px">
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+      <div class="row"><div class="tag label">Event</div><div style="font-size:16px;line-height:1.45">Event <span class="mono" style="font-size:14px">2418</span> · <span class="mono" style="font-size:14px">64:49</span> → shown as <b class="y">65'</b></div></div>
+      <div class="row"><div class="tag label" style="padding-top:4px">Fact card</div><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+        <div class="chips"><span class="pill">goal</span><span class="pill">Jamie Vardy</span><span class="pill">penalty</span><span class="pill yellow">xG 0.78</span><span class="pill yellow">24th league goal</span><span class="pill mono" style="font-size:12.5px">dv-…</span></div>
+        <div style="font-size:13.5px;color:var(--muted)">built by code; season count uses earlier matches only</div></div></div>
+      <div class="row"><div class="tag label">AI wording</div><div class="mono" style="font-size:15px;line-height:1.5;color:#dbe5e0"><span class="g">{player_surname}</span> scores from the spot: his <span class="g">{goals_season_ord}</span> league goal of the season</div></div>
+      <div class="row" style="align-items:center"><div class="tag label" style="padding-top:0">Verifier</div><div class="chips" style="align-items:center"><span class="pill green" style="font-size:14px">Vardy ✓</span><span class="pill green" style="font-size:14px">24th ✓</span><span style="font-size:14px;color:var(--muted)">→ on air</span></div></div>
+      <div class="row"><div class="tag label">Receipts</div><div class="mono" style="font-size:14.5px;line-height:1.5;color:#bccac3">AI live · verified 2 · __ s · __ tokens · $__ · trace 7f3a…</div></div>
+    </div>
+    <div style="width:300px;flex:none;display:flex;flex-direction:column;gap:12px">
+      <div style="position:relative;width:300px;height:169px;border-radius:10px;border:3px solid var(--border2);overflow:hidden;background:repeating-linear-gradient(90deg,#16472e 0 30px,#1a5236 30px 60px)">
+        <div class="cond" style="position:absolute;left:8px;top:8px;padding:2px 8px;border-radius:5px;background:#0b0f0e;font-size:15px;letter-spacing:.04em">LEI 3-0 EVE <span class="g">65'</span></div>
+        <div style="position:absolute;left:8px;right:8px;bottom:8px;display:flex;border-radius:6px;overflow:hidden">
+          <div class="cond" style="display:flex;align-items:center;padding:0 8px;background:var(--green);color:#06120c;font-size:15px;letter-spacing:.06em">GOAL</div>
+          <div style="flex:1;padding:6px 8px;background:#0b0f0e;font-size:12.5px;line-height:1.3">Vardy scores from the spot: his 24th league goal of the season.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div class="cond" style="width:68px;height:30px;flex:none;border-radius:999px;border:1.5px solid var(--green);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:16px;letter-spacing:.05em">WHY?</div>
+        <svg width="210" height="140" viewBox="0 0 210 140" style="flex:none"><rect x="1" y="1" width="208" height="138" rx="4" fill="#123824" stroke="#6f9a83" stroke-width="1.5"/><path d="M105 1v138" stroke="#6f9a83" stroke-width="1.5"/><circle cx="105" cy="70" r="17.5" fill="none" stroke="#6f9a83" stroke-width="1.5"/><rect x="178.5" y="31.5" width="30.5" height="77" fill="none" stroke="#6f9a83" stroke-width="1.5"/><rect x="199.5" y="52.5" width="9.5" height="35" fill="none" stroke="#6f9a83" stroke-width="1.5"/><rect x="1" y="31.5" width="30.5" height="77" fill="none" stroke="#6f9a83" stroke-width="1.5"/><rect x="1" y="52.5" width="9.5" height="35" fill="none" stroke="#6f9a83" stroke-width="1.5"/><path d="M189 70h18" stroke="#2fd17a" stroke-width="2" stroke-linecap="round"/><circle cx="189" cy="95" r="5.5" fill="#f5c84b" stroke="#0b0f0e" stroke-width="1.5"/><circle cx="189" cy="70" r="5.5" fill="#2fd17a" stroke="#0b0f0e" stroke-width="1.5"/><text x="172" y="99" text-anchor="end" font-family="JetBrains Mono" font-size="11" fill="#e6ece9">2416</text><text x="172" y="66" text-anchor="end" font-family="JetBrains Mono" font-size="11" fill="#e6ece9">2418</text></svg>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;font-size:13.5px;color:var(--muted)">
+        <span style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:50%;background:var(--yellow)"></span>2416 · foul won</span>
+        <span style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:50%;background:var(--green)"></span>2418 · penalty → goal</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3 WHAT IT TALKS ABOUT -->
+<div class="abs panel" data-box="sec3" style="left:940px;top:478px;width:760px;height:510px">
+  <div style="display:flex;align-items:baseline;justify-content:space-between"><div class="h-sec" style="font-size:22px"><span class="n">3</span> · What it talks about</div><div style="font-size:13px;color:var(--muted)">priority 10 = highest</div></div>
+  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 10px">
+    <div class="cell"><div class="tile" style="width:32px;height:32px;border-radius:8px"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="m12 7.5 3.4 2.5-1.3 4h-4.2l-1.3-4z"/><path d="M12 3v4.5M15.4 10l4.9-1.6M14.1 14l3 4.1M9.9 14l-3 4.1M8.6 10 3.7 8.4"/></svg></div><div style="flex:1;min-width:0"><div class="nm">Goal in context</div><div class="rl">Any goal</div></div><div class="prio hi" style="width:30px;height:30px;font-size:17px">10</div></div>
+    <div class="cell"><div class="tile" style="width:32px;height:32px;border-radius:8px"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M10 2.5h4M12 2.5V6M18.3 6.7l1.5-1.5"/></svg></div><div style="flex:1;min-width:0"><div class="nm">Late drama</div><div class="rl">Goal or xG ≥ 0.30 from 85'</div></div><div class="prio hi" style="width:30px;height:30px;font-size:17px">10</div></div>
+    <div class="cell"><div class="tile" style="width:32px;height:32px;border-radius:8px"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></svg></div><div style="flex:1;min-width:0"><div class="nm">Big chance</div><div class="rl">Shot with xG ≥ 0.30</div></div><div class="prio hi" style="width:30px;height:30px;font-size:17px">9</div></div>
+    <div class="cell"><div class="tile" style="width:32px;height:32px;border-radius:8px"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" stroke-width="1.8"><path d="M7 21V3"/><path d="M7 4h11l-3 3.5 3 3.5H7"/><path d="M4 21h8"/></svg></div><div style="flex:1;min-width:0"><div class="nm">Set-piece threat</div><div class="rl">3rd set-piece shot in 15 min</div></div><div class="prio mid" style="width:30px;height:30px;font-size:17px">8</div></div>
+    <div class="cell"><div class="tile" style="width:32px;height:32px;border-radius:8px"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div><div style="flex:1;min-width:0"><div class="nm">Upset watch</div><div class="rl">Elo underdog takes the lead</div></div><div class="prio mid" style="width:30px;height:30px;font-size:17px">7</div></div>
+    <div class="cell"><div class="tile" style="width:32px;height:32px;border-radius:8px"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" stroke-width="1.8"><path d="M2.5 12h7.5M21.5 12H14"/><path d="m6.5 8 4 4-4 4M17.5 8l-4 4 4 4"/></svg></div><div style="flex:1;min-width:0"><div class="nm">Pressing surge</div><div class="rl">PPDA halves vs previous 10 min</div></div><div class="prio lo" style="width:30px;height:30px;font-size:17px">6</div></div>
+    <div class="cell"><div class="tile" style="width:32px;height:32px;border-radius:8px"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" stroke-width="1.8"><path d="M2.5 15c2.5 0 2.5-6 5-6s2.5 6 5 6 2.5-6 5-6 2 3 4 3"/></svg></div><div style="flex:1;min-width:0"><div class="nm">Momentum swing</div><div class="rl">Threat overtakes the rival's</div></div><div class="prio lo" style="width:30px;height:30px;font-size:17px">6</div></div>
+    <div class="cell"><div class="tile" style="width:32px;height:32px;border-radius:8px"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 9.7h18M3 14.3h18M9 5v4.7M15 5v4.7M6 9.7v4.6M12 9.7v4.6M18 9.7v4.6M9 14.3V19M15 14.3V19"/></svg></div><div style="flex:1;min-width:0"><div class="nm">Defensive wall</div><div class="rl">10 defensive actions</div></div><div class="prio lo" style="width:30px;height:30px;font-size:17px">5</div></div>
+  </div>
+  <div style="padding:12px 14px;border-radius:10px;background:var(--card2);border:1px solid var(--border);display:flex;flex-direction:column;gap:9px">
+    <div><span class="label" style="font-size:15px">Pre-match context</span><span style="font-size:13px;color:var(--muted)"> · Leicester before Everton, 7 May 2016</span></div>
+    <div class="chips" style="gap:7px">
+      <span class="pill" style="font-size:13.5px">Elo <span class="y">#1 · 1,624</span></span>
+      <span class="pill" style="font-size:13.5px">Expected score <span class="y">0.76</span></span>
+      <span class="pill" style="font-size:13.5px">Form <span style="display:inline-flex;gap:3px;margin-left:2px"><span class="formsq W" style="width:17px;height:17px;font-size:12px">W</span><span class="formsq W" style="width:17px;height:17px;font-size:12px">W</span><span class="formsq D" style="width:17px;height:17px;font-size:12px">D</span><span class="formsq W" style="width:17px;height:17px;font-size:12px">W</span><span class="formsq D" style="width:17px;height:17px;font-size:12px">D</span></span></span>
+      <span class="pill" style="font-size:13.5px">Unbeaten in <span class="y">10</span></span>
+      <span class="pill" style="font-size:13.5px">Won <span class="y">3–2</span> at Everton in December</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:#bccac3"><span class="label" style="font-size:15px">Queue</span>max 1 insight per minute · 5-min cooldown · goals skip the queue</div>
+</div>
+
+<!-- 4 VERIFIER REJECTS -->
+<div class="abs panel" data-box="sec4" style="left:1724px;top:478px;width:620px;height:510px">
+  <div class="h-sec" style="font-size:22px"><span class="n">4</span> · What the verifier rejects</div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div class="rej"><svg class="ico r" width="22" height="22" viewBox="0 0 24 24" stroke-width="2" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></svg><div><div class="q">“his fourth hat-trick”</div><div class="why">A number or number word that didn't come from a slot</div></div></div>
+    <div class="rej"><svg class="ico r" width="22" height="22" viewBox="0 0 24 24" stroke-width="2" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></svg><div><div class="q">Names not in the card</div><div class="why">Only names the fact card carries may appear</div></div></div>
+    <div class="rej"><svg class="ico r" width="22" height="22" viewBox="0 0 24 24" stroke-width="2" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></svg><div><div class="q">“season high”</div><div class="why">A comparison with nothing in the card behind it</div></div></div>
+    <div class="rej"><svg class="ico r" width="22" height="22" viewBox="0 0 24 24" stroke-width="2" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></svg><div><div class="q">“a 76% chance of winning”</div><div class="why">Elo is a rating, not a win probability</div></div></div>
+    <div class="rej"><svg class="ico r" width="22" height="22" viewBox="0 0 24 24" stroke-width="2" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></svg><div><div class="q">“pacy”, “clever”</div><div class="why">Body or intelligence words with no fact behind them</div></div></div>
+    <div class="rej" style="background:var(--green-t);border-color:var(--green)"><svg class="ico g" width="22" height="22" viewBox="0 0 24 24" stroke-width="2" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.2 2.4 2.4 4.6-5"/></svg><div style="min-width:0"><div class="q">Fallback template always ready</div><div class="mono" style="font-size:14px;line-height:1.5;color:#dbe5e0;margin-top:3px">GOAL 65' · Jamie Vardy (pen) ·<br>Leicester City 3-0 Everton · xG 0.78</div></div></div>
+  </div>
+</div>
+
+<!-- 5 PLATFORM -->
+<div class="abs panel" data-box="sec5" style="left:56px;top:1006px;width:1100px;height:240px;gap:12px">
+  <div class="h-sec" style="font-size:20px"><span class="n">5</span> · Platform</div>
+  <div style="display:flex;align-items:flex-start;justify-content:space-between">
+    <div class="node"><div class="tile" style="width:36px;height:36px;border-radius:9px"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 10-2 2 2 2M15 10l2 2-2 2M13 9l-2 6"/></svg></div><div class="lb">Codespaces dev container</div><div class="sb">infrastructure as code</div></div>
+    <div class="narrow"><svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 6h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m9 2 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="node"><div class="tile" style="width:36px;height:36px;border-radius:9px"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.8"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m10 12-2 2 2 2M14 12l2 2-2 2"/></svg></div><div class="lb">Bicep</div><div class="sb mono" style="font-size:11.5px">infra/main.bicep</div></div>
+    <div class="narrow"><svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 6h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m9 2 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="node"><div class="tile" style="width:36px;height:36px;border-radius:9px;color:var(--pink);border-color:var(--pink);background:var(--pink-t)"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.8"><path d="M7 18.5a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9a4 4 0 0 1 .5 7.97"/><rect x="9.5" y="12.5" width="5" height="5" rx="1"/></svg></div><div class="lb p">Azure Container Apps</div><div class="sb">IP allow-list, scale 0–2</div></div>
+    <div class="narrow"><svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 6h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m9 2 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="node"><div class="tile" style="width:36px;height:36px;border-radius:9px"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 16.5c.6-1.8 1.8-2.7 3.2-2.7s2.6.9 3.2 2.7M14.5 10h4M14.5 13.5h3"/></svg></div><div class="lb">User-assigned managed identity</div><div class="sb">Foundry User + AcrPull</div></div>
+    <div class="narrow"><svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 6h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m9 2 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="node"><div class="tile" style="width:36px;height:36px;border-radius:9px;color:var(--blue);border-color:var(--blue);background:var(--blue-t)"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.8"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2.5V6M15 2.5V6M9 18v3.5M15 18v3.5M2.5 9H6M2.5 15H6M18 9h3.5M18 15h3.5"/><path d="M10 14.8 12 9.2l2 5.6M10.7 12.9h2.6"/></svg></div><div class="lb b">Microsoft Foundry agent</div><div class="sb">no API keys anywhere</div></div>
+    <div class="narrow"><svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 6h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m9 2 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="node"><div class="tile" style="width:36px;height:36px;border-radius:9px"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.8"><path d="M3 3v18h18"/><path d="m7 15 3.5-4 3 2.5L19 7"/></svg></div><div class="lb">Application Insights</div><div class="sb">OpenTelemetry traces, no prompts logged</div></div>
+    <div class="narrow"><svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 6h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m9 2 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="node"><div class="tile" style="width:36px;height:36px;border-radius:9px;color:var(--yellow);border-color:var(--yellow)"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.8"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg></div><div class="lb">Budget alert</div><div class="sb">USD 30 / month</div></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;align-self:flex-start;padding:5px 14px;border-radius:999px;border:1px solid var(--yellow);background:var(--yellow-t);font-size:13.5px;color:#e9e1c6"><span class="cond y" style="font-size:15px;letter-spacing:.08em">EVAL GATE</span>≥ 90% verified first time · ≤ 10% fallback · p95 ≤ 1.2 s → cheapest passing model serves</div>
+</div>
+
+<!-- 6 DATA AND RULES -->
+<div class="abs panel" data-box="sec6" style="left:1180px;top:1006px;width:700px;height:240px;gap:12px">
+  <div class="h-sec" style="font-size:20px"><span class="n">6</span> · Data and rules</div>
+  <div style="display:flex;flex-direction:column;gap:7px">
+    <div class="dli"><svg class="ico g" width="18" height="18" viewBox="0 0 24 24" stroke-width="1.9" style="flex:none"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.5"/><path d="M4.5 5.5v13c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5v-13"/><path d="M4.5 12c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5"/></svg><span>StatsBomb open data · <span class="y">380</span> matches · Leicester's 2015/16 title season</span></div>
+    <div class="dli"><svg class="ico g" width="18" height="18" viewBox="0 0 24 24" stroke-width="1.9" style="flex:none"><circle cx="12" cy="12" r="9"/><path d="m12 7.5 3.4 2.5-1.3 4h-4.2l-1.3-4z"/></svg><span>Demo: Leicester City 3–1 Everton, 7 May 2016 · upset demo: Arsenal 1–2 Swansea</span></div>
+    <div class="dli"><svg class="ico g" width="18" height="18" viewBox="0 0 24 24" stroke-width="1.9" style="flex:none"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Season stats use only earlier matches</span></div>
+    <div class="dli"><svg class="ico g" width="18" height="18" viewBox="0 0 24 24" stroke-width="1.9" style="flex:none"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6L12 3z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg><span>Checksums + schema check before ingest · data version on every card</span></div>
+    <div class="dli"><svg class="ico r" width="18" height="18" viewBox="0 0 24 24" stroke-width="1.9" style="flex:none"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg><span>No raw data in the repo (pre-commit hook)</span></div>
+    <div class="dli"><svg class="ico r" width="18" height="18" viewBox="0 0 24 24" stroke-width="1.9" style="flex:none"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg><span>Not for commercial use</span></div>
+  </div>
+</div>
+
+<!-- 7 TIMELINE -->
+<div class="abs panel" data-box="sec7" style="left:1904px;top:1006px;width:440px;height:240px;gap:12px">
+  <div class="h-sec" style="font-size:20px"><span class="n">7</span> · Timeline</div>
+  <div style="position:relative;width:392px;height:150px">
+    <div style="position:absolute;left:8px;top:44px;width:376px;height:3px;border-radius:2px;background:var(--border2)"></div>
+    <div class="cond" style="position:absolute;left:0;top:0;width:120px;font-size:22px">OCT 8</div>
+    <div class="cond y" style="position:absolute;left:136px;top:0;width:120px;text-align:center;font-size:22px">NOV 1</div>
+    <div class="cond y" style="position:absolute;left:272px;top:0;width:120px;text-align:right;font-size:22px">NOV 22</div>
+    <div style="position:absolute;left:1px;top:38px;width:15px;height:15px;border-radius:50%;background:var(--card);border:3px solid var(--text)"></div>
+    <div style="position:absolute;left:186px;top:35px;width:21px;height:21px;background:var(--yellow);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)"></div>
+    <div style="position:absolute;left:371px;top:35px;width:21px;height:21px;background:var(--yellow);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)"></div>
+    <div style="position:absolute;left:0;top:66px;width:120px;font-size:14px;font-weight:600">Start</div>
+    <div style="position:absolute;left:126px;top:66px;width:140px;text-align:center;line-height:1.35"><div style="font-size:14px;font-weight:600" class="y">Milestone 1</div><div style="font-size:13px;color:#bccac3">Local demo, template insights, no AI</div></div>
+    <div style="position:absolute;left:272px;top:66px;width:120px;text-align:right;line-height:1.35"><div style="font-size:14px;font-weight:600" class="y">Milestone 2</div><div style="font-size:13px;color:#bccac3">Azure + AI + 2-min video + blog</div></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="abs" style="left:56px;top:1274px;width:2000px;font-size:14.5px;color:var(--muted)">Independent portfolio project inspired by the Microsoft × Premier League 'Inside the Game' brief. Not an official entry. Data: StatsBomb open data, not for commercial use.</div>
+<div class="abs logo-box" style="left:2184px;top:1262px;width:160px;height:48px;font-size:14px">StatsBomb logo</div>
+
+</div>
+</body>
+</html>
