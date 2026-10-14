@@ -92,7 +92,7 @@ Dates: Thu Oct 8 – Sun Oct 11 (2026-10-08 → 2026-10-11) · Total: ≈2 h 45 
     ```
   - Done when: On GitHub you see .claude, .devcontainer, docs, src, tests and data.
   - Why: One folder per pipeline stage, so the repo looks like the diagram. Git ignores empty folders, so `tests` and `data` hold a `.gitkeep` file. `__init__.py` makes the src folders importable, and `pythonpath = ["."]` in pyproject.toml lets pytest find them, so `from src.ingest.schema import Event` works.
-- [ ] **w0-7b · Rebuild the codespace and restart Claude Code** · 15 min · with Claude
+- [x] **w0-7b · Rebuild the codespace and restart Claude Code** · 15 min · with Claude
   - Do:
     1. Type `/exit` to close Claude Code.
     2. Open the Command Palette (**Ctrl+Shift+P**, or **⌘⇧P** on a Mac) → **Codespaces: Rebuild Container**. Wait a few minutes.
