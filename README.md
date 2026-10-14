@@ -55,13 +55,16 @@ The verifier is plain Python, never a model. It rejects text with:
 - Elo ratings: every club starts at 1500; home advantage +60; K = 20.
 
 ### Personalization
-- Analyst (numbers-heavy) or casual-fan wording, in English (French optional).
+- Analyst (numbers-heavy) or casual-fan wording, in English.
 
 ### Platform
 - **Dev machine as code:** one dev container file, rebuilt identically any time.
 - **Docker on Azure Container Apps**, with no StatsBomb data in the image.
 - **No API keys anywhere:** a managed identity with the Foundry User role (Microsoft Foundry agents).
-- **Logs in Log Analytics:** time from event to screen, AI usage, verifier pass rate, template fallback rate.
+- **Infrastructure as code:** Bicep for Azure, a dev container for the dev machine.
+- **Traces in Application Insights (OpenTelemetry):** time from event to screen, AI usage, verifier pass rate, template fallback rate. Prompts and responses are never logged.
+- **Evaluation gate:** the cheapest model that passes every quality gate serves; switching is one setting.
+- **Receipts on every insight:** status, model, latency, tokens, cost, trace ID and evidence IDs.
 - **Budget alert** to guard the cost.
 
 ## Example: one insight, end to end

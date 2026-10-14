@@ -17,19 +17,22 @@ user-invocable: false
 - Packages: `azure-ai-projects>=2.3.0` (2.8.0 was current), `azure-identity`, and `agent-framework-foundry` for agents. Add them to `requirements.txt` when week 4 starts.
 - Project endpoint format: `https://<resource>.services.ai.azure.com/api/projects/<project>`. Read it from an environment variable such as `FOUNDRY_PROJECT_ENDPOINT`; it isn't a secret, but it keeps code portable.
 - Use CESC's own model deployment name, not the one in Microsoft's samples.
-- Role for calling models and agents: **Foundry User** on the Foundry resource. Give it to CESC's own user (week 4) and to the container app's system-assigned managed identity (week 6).
+- Role for calling models and agents: **Foundry User** on the Foundry resource. Give it to CESC's own user (week 4) and to the app's user-assigned managed identity (week 6).
 - A 403 right after a role assignment usually means waiting 5–10 minutes for it to apply.
 - Sign in from the codespace with `az login --use-device-code`.
 
 ## Deploy (week 6)
 
+Deploy with `infra/main.bicep` (no `az containerapp up`):
+- A **user-assigned managed identity** with **Foundry User** on the Foundry resource and **AcrPull** on the registry.
+- Key-based auth off on Foundry and Application Insights (`disableLocalAuth: true`); registry admin user off.
+- Ingress IP allow-list; scale 0–2 replicas.
+- App settings: `FOUNDRY_PROJECT_ENDPOINT`, `AI_MODEL_DEPLOYMENT` (the model name; the eval gate in w5-6 decides it).
+
 ```bash
-az extension add --name containerapp --upgrade
 az provider register --namespace Microsoft.App
 az provider register --namespace Microsoft.OperationalInsights
-az containerapp up --name football-insights --resource-group rg-football-insights --source .
+az deployment group create --resource-group rg-football-insights --template-file infra/main.bicep
 ```
-
-Then turn on the system-assigned identity (container app → Identity), give it Foundry User, and set `FOUNDRY_PROJECT_ENDPOINT` as an environment variable on the app.
 
 IT comparison: the managed identity is the app's own account, like a computer account in Active Directory. RBAC on the Foundry resource is the ACL.
