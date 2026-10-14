@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>15 · One trace, from event to screen</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Football Insights Engine · shared design system (inlined into every page) */
+:root{
+  --bg:#0b0f0e; --card:#121a17; --card2:#0e1513; --border:#22302a; --border2:#2e3f37;
+  --text:#e6ece9; --muted:#8fa39a;
+  --green:#2fd17a; --yellow:#f5c84b; --blue:#4aa3ff; --pink:#d9709c; --red:#ff6b6b;
+  --green-t:rgba(47,209,122,.10); --blue-t:rgba(74,163,255,.10); --red-t:rgba(255,107,107,.10); --yellow-t:rgba(245,200,75,.10); --pink-t:rgba(217,112,156,.12);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+.cond{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.muted{color:var(--muted)}
+.g{color:var(--green)} .y{color:var(--yellow)} .b{color:var(--blue)} .p{color:var(--pink)} .r{color:var(--red)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px}
+.label{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
+.h-sec{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;letter-spacing:.06em;text-transform:uppercase;line-height:1}
+.h-sec .n{color:var(--green)}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;white-space:nowrap;border:1px solid var(--border2);background:var(--card2);line-height:1.35}
+.pill.green{border-color:var(--green);color:var(--green)}
+.pill.yellow{border-color:var(--yellow);color:var(--yellow)}
+.pill.blue{border-color:var(--blue);color:var(--blue)}
+.pill.pink{border-color:var(--pink);color:var(--pink)}
+.pill.red{border-color:var(--red);color:var(--red)}
+.pill.solid-green{background:var(--green);border-color:var(--green);color:#06120c;font-weight:600}
+.pill.solid-yellow{background:var(--yellow);border-color:var(--yellow);color:#1a1404;font-weight:600}
+.ico{fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
+.tile{display:flex;align-items:center;justify-content:center;flex:none;border-radius:10px;background:var(--card2);border:1px solid var(--border2);color:var(--green)}
+.logo-box{border:1.5px dashed #3d5248;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.prio{display:flex;align-items:center;justify-content:center;flex:none;border-radius:50%;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+.prio.hi{background:var(--green);color:#06120c}
+.prio.mid{border:1.5px solid var(--green);color:var(--green)}
+.prio.lo{border:1.5px solid #4b6358;color:var(--text)}
+.formsq{display:inline-flex;align-items:center;justify-content:center;border-radius:4px;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+.formsq.W{background:var(--green);color:#06120c}
+.formsq.D{background:#4b6358;color:var(--text)}
+.formsq.L{background:var(--red);color:#1a0606}
+
+/* 1920 x 1080 slide frame */
+.slide{position:relative;width:1920px;height:1080px;overflow:hidden;padding:72px 88px 0}
+.slide .s-label{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:24px;letter-spacing:.1em;text-transform:uppercase;color:var(--green)}
+.slide .s-title{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:76px;line-height:1.02;margin:10px 0 0}
+.slide .s-sub{font-size:24px;color:var(--muted);margin-top:12px}
+.slide .s-foot{position:absolute;left:88px;bottom:36px;font-size:17px;color:var(--muted)}
+.slide .s-num{position:absolute;right:88px;bottom:32px;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:26px;color:var(--muted)}
+.slide .content{position:absolute;left:88px;width:1744px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px}
+.sc-t{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:34px;line-height:1.05}
+.tg{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 12px;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:18px;letter-spacing:.08em;text-transform:uppercase;border:1px solid;white-space:nowrap;line-height:1.3}
+.tg.green{color:var(--green);border-color:var(--green);background:var(--green-t)}
+.tg.yellow{color:var(--yellow);border-color:var(--yellow);background:var(--yellow-t)}
+.tg.blue{color:var(--blue);border-color:var(--blue);background:var(--blue-t)}
+.tg.pink{color:var(--pink);border-color:var(--pink);background:var(--pink-t)}
+.tg.red{color:var(--red);border-color:var(--red);background:var(--red-t)}
+.tg.grey{color:var(--muted);border-color:var(--border2);background:var(--card2)}
+.badge-live{position:absolute;right:88px;top:72px;display:inline-flex;align-items:center;gap:10px;padding:8px 18px;border-radius:999px;background:var(--yellow);color:#1a1404;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:24px;letter-spacing:.1em}
+.badge-live i{width:12px;height:12px;border-radius:50%;background:#1a1404;display:inline-block}
+.num-c{display:flex;align-items:center;justify-content:center;border-radius:50%;flex:none;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+.num-c.yellow{background:var(--yellow);color:#1a1404}
+.num-c.green{background:var(--green);color:#06120c}
+.num-c.ghost{border:1.5px solid var(--border2);color:var(--muted)}
+.big{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;line-height:1}
+.term{background:#070a09;border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.term .bar{display:flex;align-items:center;gap:8px;padding:12px 18px;border-bottom:1px solid var(--border);background:#0e1513;font-size:18px;color:var(--muted)}
+.term .dot{width:13px;height:13px;border-radius:50%;flex:none}
+.term pre{margin:0;padding:22px 26px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:22px;line-height:1.6;white-space:pre-wrap;color:var(--text)}
+.li{display:flex;gap:14px;align-items:flex-start}
+.t20{font-size:20px;line-height:1.45}.t22{font-size:22px;line-height:1.45}.t24{font-size:24px;line-height:1.4}.t26{font-size:26px;line-height:1.4}.t28{font-size:28px;line-height:1.35}
+.soft{color:#c3d0ca}
+
+
+</style>
+</head>
+<body>
+<div class="slide">
+<div class="s-label">Operate</div>
+<h1 class="s-title">One trace, from event to screen</h1>
+
+
+<div class="content" data-box="content" style="top:236px;height:744px">
+<div class="sc" data-box="gantt" style="position:absolute;left:0px;top:0px;width:1100px;height:540px;padding:30px 36px"><div style="position:relative;height:440px"><div style="position:absolute;left:300px;top:0;width:60px;margin-left:-30px;text-align:center" class="t20 muted">0 s</div><div style="position:absolute;left:300px;top:34px;width:1px;height:380px;background:var(--border)"></div><div style="position:absolute;left:475px;top:0;width:60px;margin-left:-30px;text-align:center" class="t20 muted">0.3 s</div><div style="position:absolute;left:475px;top:34px;width:1px;height:380px;background:var(--border)"></div><div style="position:absolute;left:650px;top:0;width:60px;margin-left:-30px;text-align:center" class="t20 muted">0.6 s</div><div style="position:absolute;left:650px;top:34px;width:1px;height:380px;background:var(--border)"></div><div style="position:absolute;left:825px;top:0;width:60px;margin-left:-30px;text-align:center" class="t20 muted">0.9 s</div><div style="position:absolute;left:825px;top:34px;width:1px;height:380px;background:var(--border)"></div><div style="position:absolute;left:1000px;top:0;width:60px;margin-left:-30px;text-align:center" class="t20 muted">1.2 s</div><div style="position:absolute;left:1000px;top:34px;width:1px;height:380px;background:var(--border)"></div><div style="position:absolute;left:0;top:48px;width:290px;height:40px;display:flex;align-items:center" class="mono" ><span style="font-size:19px">replay event 2418</span></div><div style="position:absolute;left:300px;top:48px;width:700px;height:40px;border-radius:6px;background:#4aa3ff"></div><div style="position:absolute;left:0;top:110px;width:290px;height:40px;display:flex;align-items:center" class="mono" ><span style="font-size:19px">detect goal_in_context</span></div><div style="position:absolute;left:311px;top:110px;width:35px;height:40px;border-radius:6px;background:#2fd17a"></div><div style="position:absolute;left:0;top:172px;width:290px;height:40px;display:flex;align-items:center" class="mono" ><span style="font-size:19px">queue</span></div><div style="position:absolute;left:346px;top:172px;width:6px;height:40px;border-radius:6px;background:#2fd17a"></div><div style="position:absolute;left:0;top:234px;width:290px;height:40px;display:flex;align-items:center" class="mono" ><span style="font-size:19px">chat narrator</span></div><div style="position:absolute;left:358px;top:234px;width:495px;height:40px;border-radius:6px;background:#2fd17a"></div><div style="position:absolute;left:0;top:296px;width:290px;height:40px;display:flex;align-items:center" class="mono" ><span style="font-size:19px">verify</span></div><div style="position:absolute;left:854px;top:296px;width:40px;height:40px;border-radius:6px;background:#2fd17a"></div><div style="position:absolute;left:0;top:358px;width:290px;height:40px;display:flex;align-items:center" class="mono" ><span style="font-size:19px">render overlay</span></div><div style="position:absolute;left:895px;top:358px;width:58px;height:40px;border-radius:6px;background:#4aa3ff"></div></div><div style="display:flex;align-items:center;gap:22px;margin-top:6px" class="t20"><span style="display:flex;align-items:center;gap:8px"><i style="width:18px;height:18px;border-radius:4px;background:#4aa3ff;display:inline-block"></i>app</span><span style="display:flex;align-items:center;gap:8px"><i style="width:18px;height:18px;border-radius:4px;background:#2fd17a;display:inline-block"></i>engine</span><span class="muted" style="font-style:italic;margin-left:auto">timings illustrative</span></div></div>
+<div class="sc" data-box="right" style="position:absolute;left:1140px;top:0px;width:604px;height:540px;padding:30px 36px"><div class="label" style="font-size:22px">On every span</div><div style="margin-top:8px"><div class="mono" style="font-size:22px;line-height:1.8">app.image_digest</div><div class="mono" style="font-size:22px;line-height:1.8">app.data_version</div><div class="mono" style="font-size:22px;line-height:1.8">cloud.region</div></div><div class="label" style="font-size:22px;margin-top:30px;color:var(--blue)">Generative AI conventions</div><div style="margin-top:8px"><div class="mono" style="font-size:22px;line-height:1.8">gen_ai.request.model</div><div class="mono" style="font-size:22px;line-height:1.8">gen_ai.usage.input_tokens</div><div class="mono" style="font-size:22px;line-height:1.8">gen_ai.usage.output_tokens</div></div><div class="li t24" style="margin-top:34px;align-items:center"><svg class="ico" width="32" height="32" viewBox="0 0 24 24" stroke="#ff6b6b" stroke-width="1.9" aria-hidden="true" style="flex:none;"><path d="M2.5 12S6 5.5 12 5.5c2 0 3.7.7 5.1 1.6M21.5 12s-3.5 6.5-9.5 6.5c-2 0-3.7-.7-5.1-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="M3 3l18 18"/></svg><span><b>Not logged:</b> prompts, responses or secrets</span></div></div>
+<div class="sc" data-box="b1" style="position:absolute;left:0px;top:580px;width:850px;height:140px;padding:0 32px"><div style="display:flex;align-items:center;gap:18px;height:100%"><svg class="ico" width="36" height="36" viewBox="0 0 24 24" stroke="#4aa3ff" stroke-width="1.8" aria-hidden="true" style="flex:none;"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M5.5 13.5h9"/></svg><div class="t26"><b>Why? panel:</b> the trace ID, right away</div></div></div>
+<div class="sc" data-box="b2" style="position:absolute;left:894px;top:580px;width:850px;height:140px;padding:0 32px"><div style="display:flex;align-items:center;gap:18px;height:100%"><svg class="ico" width="36" height="36" viewBox="0 0 24 24" stroke="#2fd17a" stroke-width="1.8" aria-hidden="true" style="flex:none;"><path d="M3 3v18h18"/><path d="m7 15 3.5-4 3 2.5L19 7"/></svg><div class="t26"><b>Application Insights:</b> durable, a few minutes behind</div></div></div>
+</div>
+<div class="s-foot">github.com/mradelvand/football-insights-engine</div>
+<div class="s-num">15</div>
+</div>
+</body>
+</html>

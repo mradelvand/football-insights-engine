@@ -216,7 +216,7 @@ Right card "QUALITY": big "__%" verified first time · "__%" template fallback �
 Label "DEVELOP AND SHIP". Yellow "LIVE DEMO" badge. Title "Add insight 9 live with Claude Code".
 Left "THE PATTERN EVERY INSIGHT FOLLOWS", four yellow numbered circles: 1 "A detector · src/interpret/detectors/flank_overload.py" ·
 2 "Register it · src/interpret/registry.py" · 3 "Its template line · src/render/templates.py" · 4 "A hand-computed test · tests/test_flank_overload.py".
-Right terminal "Claude Code · the prompt, abridged": "Add a 'flank overload' insight following the pattern of shot_cluster. 1. Fire when one team makes 70%+ of its final-third entries down one flank over 10 minutes. 2. Register it at priority 5. 3. Add its template. 4. Test with hand-made events."
+Right terminal "Claude Code · the prompt, abridged": "Add a 'flank overload' insight following the pattern of big_chance. 1. Fire when one team makes 70%+ of its final-third entries down one flank over 10 minutes. 2. Register it at priority 5. 3. Add its template. 4. Test with hand-made events."
 Bottom box: "If it deviates: switch to branch v2-flank".
 ```
 

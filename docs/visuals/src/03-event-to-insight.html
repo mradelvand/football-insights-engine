@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>03 · From match event to verified insight</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Football Insights Engine · shared design system (inlined into every page) */
+:root{
+  --bg:#0b0f0e; --card:#121a17; --card2:#0e1513; --border:#22302a; --border2:#2e3f37;
+  --text:#e6ece9; --muted:#8fa39a;
+  --green:#2fd17a; --yellow:#f5c84b; --blue:#4aa3ff; --pink:#d9709c; --red:#ff6b6b;
+  --green-t:rgba(47,209,122,.10); --blue-t:rgba(74,163,255,.10); --red-t:rgba(255,107,107,.10); --yellow-t:rgba(245,200,75,.10); --pink-t:rgba(217,112,156,.12);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+.cond{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.muted{color:var(--muted)}
+.g{color:var(--green)} .y{color:var(--yellow)} .b{color:var(--blue)} .p{color:var(--pink)} .r{color:var(--red)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px}
+.label{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
+.h-sec{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;letter-spacing:.06em;text-transform:uppercase;line-height:1}
+.h-sec .n{color:var(--green)}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;white-space:nowrap;border:1px solid var(--border2);background:var(--card2);line-height:1.35}
+.pill.green{border-color:var(--green);color:var(--green)}
+.pill.yellow{border-color:var(--yellow);color:var(--yellow)}
+.pill.blue{border-color:var(--blue);color:var(--blue)}
+.pill.pink{border-color:var(--pink);color:var(--pink)}
+.pill.red{border-color:var(--red);color:var(--red)}
+.pill.solid-green{background:var(--green);border-color:var(--green);color:#06120c;font-weight:600}
+.pill.solid-yellow{background:var(--yellow);border-color:var(--yellow);color:#1a1404;font-weight:600}
+.ico{fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
+.tile{display:flex;align-items:center;justify-content:center;flex:none;border-radius:10px;background:var(--card2);border:1px solid var(--border2);color:var(--green)}
+.logo-box{border:1.5px dashed #3d5248;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.prio{display:flex;align-items:center;justify-content:center;flex:none;border-radius:50%;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+.prio.hi{background:var(--green);color:#06120c}
+.prio.mid{border:1.5px solid var(--green);color:var(--green)}
+.prio.lo{border:1.5px solid #4b6358;color:var(--text)}
+.formsq{display:inline-flex;align-items:center;justify-content:center;border-radius:4px;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+.formsq.W{background:var(--green);color:#06120c}
+.formsq.D{background:#4b6358;color:var(--text)}
+.formsq.L{background:var(--red);color:#1a0606}
+
+/* 1920 x 1080 slide frame */
+.slide{position:relative;width:1920px;height:1080px;overflow:hidden;padding:72px 88px 0}
+.slide .s-label{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:24px;letter-spacing:.1em;text-transform:uppercase;color:var(--green)}
+.slide .s-title{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:76px;line-height:1.02;margin:10px 0 0}
+.slide .s-sub{font-size:24px;color:var(--muted);margin-top:12px}
+.slide .s-foot{position:absolute;left:88px;bottom:36px;font-size:17px;color:var(--muted)}
+.slide .s-num{position:absolute;right:88px;bottom:32px;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:26px;color:var(--muted)}
+.slide .content{position:absolute;left:88px;width:1744px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px}
+.sc-t{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:34px;line-height:1.05}
+.tg{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 12px;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:18px;letter-spacing:.08em;text-transform:uppercase;border:1px solid;white-space:nowrap;line-height:1.3}
+.tg.green{color:var(--green);border-color:var(--green);background:var(--green-t)}
+.tg.yellow{color:var(--yellow);border-color:var(--yellow);background:var(--yellow-t)}
+.tg.blue{color:var(--blue);border-color:var(--blue);background:var(--blue-t)}
+.tg.pink{color:var(--pink);border-color:var(--pink);background:var(--pink-t)}
+.tg.red{color:var(--red);border-color:var(--red);background:var(--red-t)}
+.tg.grey{color:var(--muted);border-color:var(--border2);background:var(--card2)}
+.badge-live{position:absolute;right:88px;top:72px;display:inline-flex;align-items:center;gap:10px;padding:8px 18px;border-radius:999px;background:var(--yellow);color:#1a1404;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:24px;letter-spacing:.1em}
+.badge-live i{width:12px;height:12px;border-radius:50%;background:#1a1404;display:inline-block}
+.num-c{display:flex;align-items:center;justify-content:center;border-radius:50%;flex:none;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+.num-c.yellow{background:var(--yellow);color:#1a1404}
+.num-c.green{background:var(--green);color:#06120c}
+.num-c.ghost{border:1.5px solid var(--border2);color:var(--muted)}
+.big{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;line-height:1}
+.term{background:#070a09;border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.term .bar{display:flex;align-items:center;gap:8px;padding:12px 18px;border-bottom:1px solid var(--border);background:#0e1513;font-size:18px;color:var(--muted)}
+.term .dot{width:13px;height:13px;border-radius:50%;flex:none}
+.term pre{margin:0;padding:22px 26px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:22px;line-height:1.6;white-space:pre-wrap;color:var(--text)}
+.li{display:flex;gap:14px;align-items:flex-start}
+.t20{font-size:20px;line-height:1.45}.t22{font-size:22px;line-height:1.45}.t24{font-size:24px;line-height:1.4}.t26{font-size:26px;line-height:1.4}.t28{font-size:28px;line-height:1.35}
+.soft{color:#c3d0ca}
+
+
+</style>
+</head>
+<body>
+<div class="slide">
+<div class="s-label">Architecture</div>
+<h1 class="s-title">From match event to verified insight</h1>
+
+
+<div class="content" data-box="content" style="top:236px;height:744px">
+<svg aria-hidden="true" width="152" height="16" style="position:absolute;left:480px;top:92px;overflow:visible"><path d="M1 8 L148 8" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M142 2 L151 8 L142 14" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+<svg aria-hidden="true" width="152" height="16" style="position:absolute;left:1112px;top:92px;overflow:visible"><path d="M1 8 L148 8" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M142 2 L151 8 L142 14" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+<svg aria-hidden="true" width="16" height="100" style="position:absolute;left:1496px;top:200px;overflow:visible"><path d="M8 1 L8 96" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M2 90 L8 99 L14 90" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+<svg aria-hidden="true" width="152" height="16" style="position:absolute;left:1112px;top:359px;overflow:visible"><path d="M151 8 L4 8" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M10 2 L1 8 L10 14" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+<svg aria-hidden="true" width="152" height="16" style="position:absolute;left:1112px;top:425px;overflow:visible"><path d="M1 8 L148 8" stroke="#f5c84b" stroke-width="2.5" stroke-linecap="round" fill="none" stroke-dasharray="9 7"/><path d="M142 2 L151 8 L142 14" stroke="#f5c84b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+<svg aria-hidden="true" width="152" height="16" style="position:absolute;left:480px;top:392px;overflow:visible"><path d="M151 8 L4 8" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M10 2 L1 8 L10 14" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+<div style="position:absolute;left:1132px;top:446px;width:112px;"><div style="text-align:center;font-size:18px" class="y">one retry</div></div>
+<div class="sc" data-box="c1" style="position:absolute;left:0px;top:0px;width:480px;height:200px;"><div style="display:flex;align-items:center;gap:14px"><div class="num-c ghost" style="width:46px;height:46px;font-size:26px">1</div><div class="sc-t" style="font-size:38px">Event</div><div style="margin-left:auto"><span class="tg yellow">engine</span></div></div><div class="t24 soft" style="margin-top:20px">event <span class="mono " style="font-size:22px">2418</span>, <span class="mono " style="font-size:22px">64:49</span> → <b class="y">65'</b></div></div>
+<div class="sc" data-box="c2" style="position:absolute;left:632px;top:0px;width:480px;height:200px;"><div style="display:flex;align-items:center;gap:14px"><div class="num-c ghost" style="width:46px;height:46px;font-size:26px">2</div><div class="sc-t" style="font-size:38px">Detect</div><div style="margin-left:auto"><span class="tg yellow">engine</span></div></div><div class="t24 soft" style="margin-top:20px"><span class="mono " style="font-size:21px">goal_in_context</span>: Vardy, penalty, xG&nbsp;<span class="y">0.78</span></div></div>
+<div class="sc" data-box="c3" style="position:absolute;left:1264px;top:0px;width:480px;height:200px;"><div style="display:flex;align-items:center;gap:14px"><div class="num-c ghost" style="width:46px;height:46px;font-size:26px">3</div><div class="sc-t" style="font-size:38px">Queue</div><div style="margin-left:auto"><span class="tg yellow">engine</span></div></div><div class="t24 soft" style="margin-top:20px">priority <span class="y">10</span>, goals skip the queue</div></div>
+<div class="sc" data-box="c4" style="position:absolute;left:1264px;top:300px;width:480px;height:200px;border:2px solid #4aa3ff;background:var(--blue-t)"><div style="display:flex;align-items:center;gap:14px"><div class="num-c ghost" style="width:46px;height:46px;font-size:26px">4</div><div class="sc-t" style="font-size:38px">Word</div><div style="margin-left:auto"><span class="tg blue">Foundry</span></div></div><div class="t24 soft" style="margin-top:20px">JSON with slots + evidence IDs</div></div>
+<div class="sc" data-box="c5" style="position:absolute;left:632px;top:300px;width:480px;height:200px;"><div style="display:flex;align-items:center;gap:14px"><div class="num-c ghost" style="width:46px;height:46px;font-size:26px">5</div><div class="sc-t" style="font-size:38px">Check</div><div style="margin-left:auto"><span class="tg yellow">engine</span></div></div><div class="t24 soft" style="margin-top:20px">numbers, names, comparisons</div></div>
+<div class="sc" data-box="c6" style="position:absolute;left:0px;top:300px;width:480px;height:200px;"><div style="display:flex;align-items:center;gap:14px"><div class="num-c ghost" style="width:46px;height:46px;font-size:26px">6</div><div class="sc-t" style="font-size:38px">Show</div><div style="margin-left:auto"><span class="tg green">app</span></div></div><div class="t24 soft" style="margin-top:20px">overlay, Why? pitch, receipts</div></div>
+<div class="sc" data-box="tile0" style="position:absolute;left:0px;top:584px;width:418px;height:150px;display:flex;align-items:center;padding:0 32px"><div style="display:flex;align-items:baseline;gap:16px"><div class="big y" style="font-size:76px">1</div><div class="t24 soft">insight/min max</div></div></div>
+<div class="sc" data-box="tile1" style="position:absolute;left:442px;top:584px;width:418px;height:150px;display:flex;align-items:center;padding:0 32px"><div style="display:flex;align-items:baseline;gap:16px"><div class="big y" style="font-size:76px">1.2 s</div><div class="t24 soft">AI budget</div></div></div>
+<div class="sc" data-box="tile2" style="position:absolute;left:884px;top:584px;width:418px;height:150px;display:flex;align-items:center;padding:0 32px"><div style="display:flex;align-items:baseline;gap:16px"><div class="big y" style="font-size:76px">1</div><div class="t24 soft">retry</div></div></div>
+<div class="sc" data-box="tile3" style="position:absolute;left:1326px;top:584px;width:418px;height:150px;display:flex;align-items:center;padding:0 32px"><div style="display:flex;align-items:baseline;gap:16px"><div class="big y" style="font-size:76px">0</div><div class="t24 soft">API keys</div></div></div>
+</div>
+<div class="s-foot">github.com/mradelvand/football-insights-engine</div>
+<div class="s-num">03</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>04 · Keyless everywhere with Microsoft Entra ID</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Football Insights Engine · shared design system (inlined into every page) */
+:root{
+  --bg:#0b0f0e; --card:#121a17; --card2:#0e1513; --border:#22302a; --border2:#2e3f37;
+  --text:#e6ece9; --muted:#8fa39a;
+  --green:#2fd17a; --yellow:#f5c84b; --blue:#4aa3ff; --pink:#d9709c; --red:#ff6b6b;
+  --green-t:rgba(47,209,122,.10); --blue-t:rgba(74,163,255,.10); --red-t:rgba(255,107,107,.10); --yellow-t:rgba(245,200,75,.10); --pink-t:rgba(217,112,156,.12);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+.cond{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.muted{color:var(--muted)}
+.g{color:var(--green)} .y{color:var(--yellow)} .b{color:var(--blue)} .p{color:var(--pink)} .r{color:var(--red)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px}
+.label{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
+.h-sec{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;letter-spacing:.06em;text-transform:uppercase;line-height:1}
+.h-sec .n{color:var(--green)}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;white-space:nowrap;border:1px solid var(--border2);background:var(--card2);line-height:1.35}
+.pill.green{border-color:var(--green);color:var(--green)}
+.pill.yellow{border-color:var(--yellow);color:var(--yellow)}
+.pill.blue{border-color:var(--blue);color:var(--blue)}
+.pill.pink{border-color:var(--pink);color:var(--pink)}
+.pill.red{border-color:var(--red);color:var(--red)}
+.pill.solid-green{background:var(--green);border-color:var(--green);color:#06120c;font-weight:600}
+.pill.solid-yellow{background:var(--yellow);border-color:var(--yellow);color:#1a1404;font-weight:600}
+.ico{fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
+.tile{display:flex;align-items:center;justify-content:center;flex:none;border-radius:10px;background:var(--card2);border:1px solid var(--border2);color:var(--green)}
+.logo-box{border:1.5px dashed #3d5248;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.prio{display:flex;align-items:center;justify-content:center;flex:none;border-radius:50%;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+.prio.hi{background:var(--green);color:#06120c}
+.prio.mid{border:1.5px solid var(--green);color:var(--green)}
+.prio.lo{border:1.5px solid #4b6358;color:var(--text)}
+.formsq{display:inline-flex;align-items:center;justify-content:center;border-radius:4px;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+.formsq.W{background:var(--green);color:#06120c}
+.formsq.D{background:#4b6358;color:var(--text)}
+.formsq.L{background:var(--red);color:#1a0606}
+
+/* 1920 x 1080 slide frame */
+.slide{position:relative;width:1920px;height:1080px;overflow:hidden;padding:72px 88px 0}
+.slide .s-label{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:24px;letter-spacing:.1em;text-transform:uppercase;color:var(--green)}
+.slide .s-title{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:76px;line-height:1.02;margin:10px 0 0}
+.slide .s-sub{font-size:24px;color:var(--muted);margin-top:12px}
+.slide .s-foot{position:absolute;left:88px;bottom:36px;font-size:17px;color:var(--muted)}
+.slide .s-num{position:absolute;right:88px;bottom:32px;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:26px;color:var(--muted)}
+.slide .content{position:absolute;left:88px;width:1744px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px}
+.sc-t{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:34px;line-height:1.05}
+.tg{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 12px;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:18px;letter-spacing:.08em;text-transform:uppercase;border:1px solid;white-space:nowrap;line-height:1.3}
+.tg.green{color:var(--green);border-color:var(--green);background:var(--green-t)}
+.tg.yellow{color:var(--yellow);border-color:var(--yellow);background:var(--yellow-t)}
+.tg.blue{color:var(--blue);border-color:var(--blue);background:var(--blue-t)}
+.tg.pink{color:var(--pink);border-color:var(--pink);background:var(--pink-t)}
+.tg.red{color:var(--red);border-color:var(--red);background:var(--red-t)}
+.tg.grey{color:var(--muted);border-color:var(--border2);background:var(--card2)}
+.badge-live{position:absolute;right:88px;top:72px;display:inline-flex;align-items:center;gap:10px;padding:8px 18px;border-radius:999px;background:var(--yellow);color:#1a1404;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:24px;letter-spacing:.1em}
+.badge-live i{width:12px;height:12px;border-radius:50%;background:#1a1404;display:inline-block}
+.num-c{display:flex;align-items:center;justify-content:center;border-radius:50%;flex:none;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+.num-c.yellow{background:var(--yellow);color:#1a1404}
+.num-c.green{background:var(--green);color:#06120c}
+.num-c.ghost{border:1.5px solid var(--border2);color:var(--muted)}
+.big{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;line-height:1}
+.term{background:#070a09;border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.term .bar{display:flex;align-items:center;gap:8px;padding:12px 18px;border-bottom:1px solid var(--border);background:#0e1513;font-size:18px;color:var(--muted)}
+.term .dot{width:13px;height:13px;border-radius:50%;flex:none}
+.term pre{margin:0;padding:22px 26px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:22px;line-height:1.6;white-space:pre-wrap;color:var(--text)}
+.li{display:flex;gap:14px;align-items:flex-start}
+.t20{font-size:20px;line-height:1.45}.t22{font-size:22px;line-height:1.45}.t24{font-size:24px;line-height:1.4}.t26{font-size:26px;line-height:1.4}.t28{font-size:28px;line-height:1.35}
+.soft{color:#c3d0ca}
+
+
+</style>
+</head>
+<body>
+<div class="slide">
+<div class="s-label">Architecture</div>
+<h1 class="s-title">Keyless everywhere with Microsoft Entra ID</h1>
+
+
+<div class="content" data-box="content" style="top:236px;height:744px">
+<div class="" style="position:absolute;left:0px;top:0px;width:820px;height:54px;display:flex;align-items:center;gap:12px;padding:0 22px;border-radius:12px;background:#2fd17a;color:#06120c"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" stroke="#06120c" stroke-width="2" aria-hidden="true" style="flex:none;"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M12 15h5"/></svg><span class="cond" style="font-size:28px;letter-spacing:.04em">In the Codespace</span></div>
+<div class="sc" data-box="k00" style="position:absolute;left:0px;top:80px;width:820px;height:90px;padding:0 24px"><div style="display:flex;align-items:center;gap:16px;height:100%"><div class="num-c ghost" style="width:38px;height:38px;font-size:22px">1</div><div class="t26"><b>az login</b>: personal account</div></div></div>
+<svg aria-hidden="true" width="16" height="40" style="position:absolute;left:402px;top:170px;overflow:visible"><path d="M8 1 L8 36" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M2 30 L8 39 L14 30" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+<div class="sc" data-box="k01" style="position:absolute;left:0px;top:210px;width:820px;height:90px;padding:0 24px"><div style="display:flex;align-items:center;gap:16px;height:100%"><div class="num-c ghost" style="width:38px;height:38px;font-size:22px">2</div><div class="t26"><span class="mono g" style="font-size:24px">DefaultAzureCredential</span></div></div></div>
+<svg aria-hidden="true" width="16" height="40" style="position:absolute;left:402px;top:300px;overflow:visible"><path d="M8 1 L8 36" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M2 30 L8 39 L14 30" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+<div class="sc" data-box="k02" style="position:absolute;left:0px;top:340px;width:820px;height:90px;padding:0 24px"><div style="display:flex;align-items:center;gap:16px;height:100%"><div class="num-c ghost" style="width:38px;height:38px;font-size:22px">3</div><div class="t26">Same code on Azure, unchanged</div></div></div>
+<svg aria-hidden="true" width="16" height="56" style="position:absolute;left:402px;top:430px;overflow:visible"><path d="M8 1 L8 52" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M2 46 L8 55 L14 46" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+<div class="" style="position:absolute;left:924px;top:0px;width:820px;height:54px;display:flex;align-items:center;gap:12px;padding:0 22px;border-radius:12px;background:#d9709c;color:#1a0610"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" stroke="#1a0610" stroke-width="2" aria-hidden="true" style="flex:none;"><path d="M7 18.5a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9a4 4 0 0 1 .5 7.97"/><rect x="9.5" y="12.5" width="5" height="5" rx="1"/></svg><span class="cond" style="font-size:28px;letter-spacing:.04em">Azure Container Apps</span></div>
+<div class="sc" data-box="k9240" style="position:absolute;left:924px;top:80px;width:820px;height:90px;padding:0 24px"><div style="display:flex;align-items:center;gap:16px;height:100%"><div class="num-c ghost" style="width:38px;height:38px;font-size:22px">1</div><div class="t26">User-assigned managed identity</div></div></div>
+<svg aria-hidden="true" width="16" height="40" style="position:absolute;left:1326px;top:170px;overflow:visible"><path d="M8 1 L8 36" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M2 30 L8 39 L14 30" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+<div class="sc" data-box="k9241" style="position:absolute;left:924px;top:210px;width:820px;height:90px;padding:0 24px"><div style="display:flex;align-items:center;gap:16px;height:100%"><div class="num-c ghost" style="width:38px;height:38px;font-size:22px">2</div><div class="t26"><b class="g">Foundry User</b> on Foundry, <b class="g">AcrPull</b> on the registry</div></div></div>
+<svg aria-hidden="true" width="16" height="40" style="position:absolute;left:1326px;top:300px;overflow:visible"><path d="M8 1 L8 36" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M2 30 L8 39 L14 30" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+<div class="sc" data-box="k9242" style="position:absolute;left:924px;top:340px;width:820px;height:90px;padding:0 24px"><div style="display:flex;align-items:center;gap:16px;height:100%"><div class="num-c ghost" style="width:38px;height:38px;font-size:22px">3</div><div class="t26">Tokens refresh automatically</div></div></div>
+<svg aria-hidden="true" width="16" height="56" style="position:absolute;left:1326px;top:430px;overflow:visible"><path d="M8 1 L8 52" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M2 46 L8 55 L14 46" stroke="#5d776b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+<div class="sc" data-box="band" style="position:absolute;left:0px;top:486px;width:1744px;height:100px;border:1.5px solid #4aa3ff;background:var(--blue-t);padding:0 30px"><div style="display:flex;align-items:center;justify-content:center;gap:18px;height:100%"><svg class="ico" width="40" height="40" viewBox="0 0 24 24" stroke="#4aa3ff" stroke-width="1.9" aria-hidden="true" style="flex:none;"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M14 9l2 2"/></svg><div class="t28"><b class="b">Entra token</b> → Microsoft Foundry · Container Registry · Application Insights</div></div></div>
+<div class="sc" data-box="red" style="position:absolute;left:0px;top:620px;width:1744px;height:100px;border:1.5px solid #ff6b6b;background:var(--red-t);padding:0 30px"><div style="display:flex;align-items:center;gap:18px;height:100%"><svg class="ico" width="38" height="38" viewBox="0 0 24 24" stroke="#ff6b6b" stroke-width="1.9" aria-hidden="true" style="flex:none;"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/><path d="M3 3l18 18"/></svg><div class="t26">Key auth disabled on Foundry and Application Insights; registry admin user off; all set in Bicep.</div></div></div>
+</div>
+<div class="s-foot">github.com/mradelvand/football-insights-engine</div>
+<div class="s-num">04</div>
+</div>
+</body>
+</html>

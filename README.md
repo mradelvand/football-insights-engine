@@ -101,4 +101,4 @@ Open the repo in GitHub Codespaces: the dev container installs everything. Then:
 - **Code:** MIT licence (see [LICENSE](LICENSE)). The MIT licence covers the code only, not StatsBomb's data.
 
 ## More
-- [Project brief](docs/brief.md) · [Plan and progress](docs/PLAN.md) · [Devlog](docs/devlog.md)
+- [Project brief](docs/brief.md) · [Plan and progress](docs/PLAN.md) · [Devlog](docs/devlog.md) · [Slides](docs/SLIDES.md)
