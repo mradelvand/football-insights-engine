@@ -1,6 +1,6 @@
 # Football Insights Engine
 
-![How the Football Insights Engine works: pipeline, one insight end to end, insight types, verifier rules, platform, data rules and timeline](docs/images/overview.webp)
+![How the Football Insights Engine works: pipeline, one insight end to end, insight types, verifier rules, platform, data rules and timeline](docs/images/overview.png)
 
 **An AI match commentator.** It replays a real Premier League match one event at a time and puts short insights on screen about what UK fans already talk about: chance quality, set pieces, pressing, form and late drama. Every number, name and comparison is checked by code before anyone sees it.
 
