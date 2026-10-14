@@ -37,7 +37,7 @@ Dates: Thu Oct 8 – Sun Oct 11 (2026-10-08 → 2026-10-11) · Total: ≈2 h 45 
   - Done when: Confirmation email received and the hour is blocked.
   - Why: Microsoft walks through a reference architecture for this exact problem. It's open to everyone; it is not the competition.
   - Link: [Open the event page](https://developer.microsoft.com/en-us/reactor/events/27536/)
-- [ ] **w0-3 · Create a public GitHub repo** · 20 min · by hand
+- [x] **w0-3 · Create a public GitHub repo** · 20 min · by hand
   - Do:
     1. Name: `football-insights-engine`
     2. Choose **Public**.
