@@ -103,7 +103,7 @@ Dates: Thu Oct 8 – Sun Oct 11 (2026-10-08 → 2026-10-11) · Total: ≈2 h 45 
     ```
   - Done when: `/status` shows your progress and `/next` shows your next step.
   - Why: `.devcontainer/devcontainer.json` describes your whole dev machine in one file: Python, your packages, Azure CLI, Docker and Claude Code. Rebuild it any time and you get the same machine back. That's infrastructure as code, applied to your own workstation. The restart also makes sure Claude loads `CLAUDE.md` (its project memory) and your new shortcuts.
-- [ ] **w0-8a · Python primer, part 1 (sections 3–4)** · 30 min · by hand
+- [x] **w0-8a · Python primer, part 1 (sections 3–4)** · 30 min · by hand
   - Do:
     1. Read sections 3 and 4.
     2. Type every example into the codespace. Don't copy-paste.
