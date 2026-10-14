@@ -47,7 +47,7 @@ Dates: Thu Oct 8 – Sun Oct 11 (2026-10-08 → 2026-10-11) · Total: ≈2 h 45 
   - Done when: The repo shows README, LICENSE and .gitignore.
   - Why: Public means it's your portfolio. The Python .gitignore keeps junk and secrets out. MIT lets others learn from it.
   - Link: [Open GitHub: new repo](https://github.com/new)
-- [ ] **w0-4 · Open the repo in Codespaces** · 15 min · by hand
+- [x] **w0-4 · Open the repo in Codespaces** · 15 min · by hand
   - Do:
     1. On the repo page, click the green **Code** button.
     2. Open the **Codespaces** tab.
