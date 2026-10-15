@@ -3,3 +3,4 @@ pytest
 streamlit
 mplsoccer
 statsbombpy
+ipykernel
